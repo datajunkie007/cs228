@@ -29,6 +29,17 @@ end
 factors = repmat(struct('var', [], 'card', [], 'val', []), n - 1, 1);
 
 % Your code here:
-factors = []; %% REMOVE THIS LINE
+% factors = []; %% REMOVE THIS LINE
+for i = 1:n-1
+    factors(i).var = [i+1,i];
+    factors(i).card = [K, K];
+%     for j = 1:K
+%         for kk = 1:K
+%             myIndex = AssignmentToIndex([j,kk],factors(i).card);
+%             factors(i).val(myIndex) = pairwiseModel(kk,j);
+%         end
+%     end
+    factors(i).val = reshape(pairwiseModel',prod(factors(i).card),1);
+end
 
 end

@@ -22,7 +22,20 @@ if (length(allFactors) <= F)
 end
 
 % Your code here:
-factors = allFactors; %%% REMOVE THIS LINE
+% factors = allFactors; %%% REMOVE THIS LINE
+
+scores = zeros(length(allFactors), 1);
+
+for i = 1:length(allFactors)
+    index = AssignmentToIndex([1, 1], allFactors(i).card);
+    scores(i) = allFactors(i).val(index);
+end
+
+[sorted, ordering] = sort(scores);
+
+sortedFactors = allFactors(ordering);
+
+factors = sortedFactors(end:-1:end-F+1);
 
 end
 

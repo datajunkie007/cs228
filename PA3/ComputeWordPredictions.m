@@ -27,5 +27,10 @@ wordPredictions = cell(numWords, 1);
 
 % Your code here:
 
+for i = 1:numWords;
+  network = BuildOCRNetwork(allWords{i}, imageModel, pairwiseModel, tripletList);
+  wordPredictions{i} = RunInference(network);
+end
+
 end
 

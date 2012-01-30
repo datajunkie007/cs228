@@ -18,7 +18,17 @@ function factor = ComputeSimilarityFactor (images, K, i, j)
 
 factor = struct('var', [], 'card', [], 'val', []);
 
+n = length(images);
+
 % Your code here:
+factor.var = [i, j];
+factor.card = [K, K];
+
+factor.val = ones(prod(factor.card), 1);
+for kk = 1:K
+    index = AssignmentToIndex([kk, kk], factor.card);
+    factor.val(index) = ImageSimilarity(images(i).img, images(j).img);
+end
 
 end
 

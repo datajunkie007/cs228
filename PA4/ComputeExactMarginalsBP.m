@@ -28,4 +28,28 @@ function M = ComputeExactMarginalsBP(F, E, isMax)
 % Implement Exact and MAP Inference.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+P = CreateCliqueTree(F, E);
+
+P = CliqueTreeCalibrate(P, isMax);
+
+N = length(F);
+vars = [];
+
+for i = 1:N
+  vars = union(vars, F(i).var);
+end
+
+M = repmat(struct('var', 0, 'card', 0, 'val', []), length(vars), 1);
+
+for i = 1:length(vars)
+  v = vars(i);
+  for j = 1:length(P.cliqueList)
+    if ismember(v, P.cliqueList(j).var)
+        M(v) = FactorMarginalization(P.cliqueList(j), setdiff(P.cliqueList(j).var, [v]));
+        M(v).val = M(v).val ./ sum(M(v).val); % normalization
+      break;
+    end
+  end
+end
+
 end

@@ -41,6 +41,32 @@ P.cliqueList = repmat(struct('var', [], 'card', [], 'val', []), N, 1);
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+M = length(C.factorList);
+assigned = zeros(M, 1);
+
+for i = 1:N
+
+  P.cliqueList(i).var = C.nodes{i};
+
+  for j = 1:M
+    if (~assigned(j))
+      [tf, index] = ismember (C.factorList(j).var, P.cliqueList(i).var);
+      if (all(tf))
+        P.cliqueList(i).card(index) = C.factorList(j).card;
+        assigned(j) = i;
+      end
+    end
+  end
+
+  P.cliqueList(i).val = ones(1, prod(P.cliqueList(i).card));
+
+end
+
+for j = 1:M
+  P.cliqueList(assigned(j)).val = FactorProduct(P.cliqueList(assigned(j)),C.factorList(j)).val;
+end
+
+P.edges = C.edges;
 
 end
 

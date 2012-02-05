@@ -23,13 +23,34 @@
 % CS228 Probabilistic Graphical Models(Winter 2012)
 % Copyright (C) 2012, Stanford University
 
-function [i, j] = GetNextCliques(P, messages)
+function [ii, jj] = GetNextCliques(P, messages)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
+N = size(messages,1);
+ii = 0;
+jj = 0;
+for i = 1:N
+    for j = 1:N
+        if (P.edges(i,j) && isempty(messages(i,j).var))
+            readyToSend = 1;
+            for k = 1:N
+                if k ~= j && P.edges(k,i)
+                    if isempty(messages(k,i).var)
+                        readyToSend = 0;
+                        break;
+                    end
+                end
+            end
+            if readyToSend
+                ii = i;
+                jj = j;
+                return;
+            end
+        end
+    end
+end
 
 return;

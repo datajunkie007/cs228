@@ -63,7 +63,8 @@ for i = 1:N
 end
 
 for j = 1:M
-  P.cliqueList(assigned(j)).val = FactorProduct(P.cliqueList(assigned(j)),C.factorList(j)).val;
+  product = FactorProduct(P.cliqueList(assigned(j)), C.factorList(j));
+  P.cliqueList(assigned(j)).val = product.val;
 end
 
 P.edges = C.edges;

@@ -35,7 +35,7 @@ end;
 
 % Initialize B.card and B.val
 B.card = A.card(mapB);
-B.val = zeros(1,prod(B.card));
+B.val = ones(1, prod(B.card)) .* -inf;
 
 % Compute some helper indices
 % These will be very useful for calculating C.val

@@ -73,9 +73,9 @@ for i = 1:N
   for k = 1:N
     if P.edges(i,k)
       if isMax
-        P.cliqueList(i) = FactorSum(P.cliqueList(i),MESSAGES(k,i));
+        P.cliqueList(i) = FactorSum(P.cliqueList(i), MESSAGES(k,i));
       else
-        P.cliqueList(i) = FactorProduct(P.cliqueList(i),MESSAGES(k,i));
+        P.cliqueList(i) = FactorProduct(P.cliqueList(i), MESSAGES(k,i));
       end
     end
   end

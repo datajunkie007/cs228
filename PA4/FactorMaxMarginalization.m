@@ -48,5 +48,11 @@ indxB = AssignmentToIndex(assignments(:, mapB), B.card);
 % Correctly populate the factor values of B
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+for i = 1:length(A.val)
+  if A.val(i) > B.val(indxB(i))
+    B.val(indxB(i)) = A.val(i);
+  end
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end

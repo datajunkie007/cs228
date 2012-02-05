@@ -38,10 +38,10 @@ while nexti && nextj
   tempf = P.cliqueList(nexti);
   for k = 1:N
     if k ~= nextj
-      tempf = FactorProduct(MESSAGES(k, nexti),tempf);
+      tempf = FactorProduct(tempf, MESSAGES(k, nexti));
     end
   end
-  MESSAGES(nexti, nextj) = ComputeMarginal(sepset, tempf, []);
+  MESSAGES(nexti, nextj) = FactorMarginalization(tempf, setdiff(tempf.var, sepset));
   MESSAGES(nexti, nextj).val = MESSAGES(nexti, nextj).val ./ sum(MESSAGES(nexti, nextj).val);
   [nexti, nextj] = GetNextCliques(P, MESSAGES);  
 

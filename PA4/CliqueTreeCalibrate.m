@@ -31,6 +31,21 @@ MESSAGES = repmat(struct('var', [], 'card', [], 'val', []), N, N);
 %
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+[nexti, nextj] = GetNextCliques(P, MESSAGES);
+
+while nexti && nextj
+  sepset = intersect(P.cliqueList(nexti).var, P.cliqueList(nextj).var);
+  tempf = P.cliqueList(nexti);
+  for k = 1:N
+    if k ~= nextj
+      tempf = FactorProduct(MESSAGES(k, nexti),tempf);
+    end
+  end
+  MESSAGES(nexti, nextj) = ComputeMarginal(sepset, tempf, []);
+  MESSAGES(nexti, nextj).val = MESSAGES(nexti, nextj).val ./ sum(MESSAGES(nexti, nextj).val);
+  [nexti, nextj] = GetNextCliques(P, MESSAGES);  
+
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
@@ -39,6 +54,12 @@ MESSAGES = repmat(struct('var', [], 'card', [], 'val', []), N, N);
 % Compute the final potentials for the cliques and place them in P.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+for i = 1:N
+  for k = 1:N
+    if P.edges(i,k)
+      P.cliqueList(i) = FactorProduct(P.cliqueList(i),MESSAGES(k,i));
+    end
+  end
+end
 
 return

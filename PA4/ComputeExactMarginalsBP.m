@@ -45,8 +45,12 @@ for i = 1:length(vars)
   v = vars(i);
   for j = 1:length(P.cliqueList)
     if ismember(v, P.cliqueList(j).var)
-        M(v) = FactorMarginalization(P.cliqueList(j), setdiff(P.cliqueList(j).var, [v]));
-        M(v).val = M(v).val ./ sum(M(v).val); % normalization
+        if isMax
+          M(v) = FactorMaxMarginalization(P.cliqueList(j), setdiff(P.cliqueList(j).var, [v]));
+        else
+          M(v) = FactorMarginalization(P.cliqueList(j), setdiff(P.cliqueList(j).var, [v]));
+          M(v).val = M(v).val ./ sum(M(v).val); % normalization
+        end
       break;
     end
   end

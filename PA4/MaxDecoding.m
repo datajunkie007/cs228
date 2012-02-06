@@ -9,7 +9,7 @@
 %
 %   M is a list of factors, where each factor is only over one variable.
 %
-%   See also COMPUTEEXACTMARGINALSBP
+%   See also ComputeExactMarginalsBP
 
 % CS228 Probabilistic Graphical Models(Winter 2012)
 % Copyright (C) 2012, Stanford University
@@ -20,6 +20,13 @@ function A = MaxDecoding( M )
 % YOUR CODE HERE
 % Compute the best assignment for variables in the network.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A = ones(1, length(M));
+
+for i = 1:length(A)
+  [dummy, index] = max(M(i).val);
+  A(i) = index;
+end
 
 end
 

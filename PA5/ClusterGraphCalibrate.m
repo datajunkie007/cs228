@@ -46,6 +46,7 @@ for m = 1:length(edgeFromIndx),
     % The matlab/octave functions 'intersect' and 'find' may
     % be useful here (for making your code faster)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     [ MESSAGES(i,j).var, ia, ib ] = intersect(P.clusterList(i).var, P.clusterList(j).var);
     MESSAGES(i,j).card = P.clusterList(i).card(ia);
     MESSAGES(i,j).val = ones(1, prod(MESSAGES(i,j).card));

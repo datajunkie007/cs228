@@ -28,14 +28,14 @@ function M = ComputeApproxMarginalsBP(F,E)
     
     P = ClusterGraphCalibrate(clusterGraph);
     
-    N = unique([P.clusterList(:).var]);
+    vars = unique([P.clusterList(:).var]);
     
     % compute marginals on each variable
-    M = repmat(struct('var', 0, 'card', 0, 'val', []), length(N), 1);
+    M = repmat(struct('var', 0, 'card', 0, 'val', []), length(vars), 1);
 
     % Populate M so that M(i) contains the marginal probability over
     % variable i
-    for i = 1:length(N),
+    for i = 1:length(vars),
     
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % YOUR CODE HERE
@@ -48,6 +48,10 @@ function M = ComputeApproxMarginalsBP(F,E)
         % which is defined at the bottom of this file.  Read through it
         % to make sure you understand its functionality.
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        indx = FindPotentialWithVariable(P, vars(i));
+        M(i) = FactorMarginalization(P.clusterList(indx), setdiff(P.clusterList(indx).var, [ vars(i) ]) );
+        M(i).val = M(i).val ./ sum(M(i).val);
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     end

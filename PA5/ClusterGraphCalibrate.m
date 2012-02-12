@@ -62,6 +62,10 @@ iteration = 0;
 
 lastMESSAGES = MESSAGES;
 
+% for quiz question
+thresh = 1.0e-6;
+ijij = [ 19 3; 15 40; 17 2 ];
+
 while (1),
     iteration = iteration + 1;
     [i, j] = GetNextClusters(P, MESSAGES, lastMESSAGES, iteration, useSmartMP); 
@@ -93,7 +97,7 @@ while (1),
     if(useSmartMP==1)
       lastMESSAGES(i,j)=prevMessage;
     end
-    
+
     % Check for convergence every m iterations
     if mod(iteration, length(edgeFromIndx)) == 0
         if (CheckConvergence(MESSAGES, lastMESSAGES))
@@ -101,7 +105,14 @@ while (1),
         end
         disp(['LBP Messages Passed: ', int2str(iteration), '...']);
         if(useSmartMP~=1)
-          lastMESSAGES=MESSAGES;
+            for i = 1:size(ijij, 1)
+                if MessageDelta(MESSAGES(ijij(i,1), ijij(i,2)), lastMESSAGES(ijij(i,1), ijij(i,2))) < thresh
+                    disp([ 'Diff for ', num2str(ijij(i,1)), ' -> ', num2str(ijij(i,2)), ': ', num2str(MessageDelta(MESSAGES(ijij(i,1), ijij(i,2)), lastMESSAGES(ijij(i,1), ijij(i,2)))) ]);
+                    disp([ 'On iteration: ', num2str(iteration)]);
+                    disp([ '' ]);
+                end
+            end
+            lastMESSAGES=MESSAGES;
         end
     end
     

@@ -26,8 +26,8 @@ thresh = 1.0e-6;
 
 converged = 1;
 
-for i = size(mNew, 1)
-  for j = size(mNew, 2)
+for i = 1:size(mNew, 1)
+  for j = 1:size(mNew, 2)
     if any(abs(mNew(i,j).val - mOld(i,j).val) > thresh)
       converged = 0;
       return;

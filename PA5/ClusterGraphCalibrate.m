@@ -61,11 +61,11 @@ tic;
 iteration = 0;
 
 lastMESSAGES = MESSAGES;
-
-% for quiz question
-thresh = 1.0e-6;
-ijij = [ 19 3; 15 40; 17 2 ];
-X = []; Y = []; Z = [];
+% 
+% % for quiz question
+% thresh = 1.0e-6;
+% ijij = [ 19 3; 15 40; 17 2 ];
+% X = []; Y = []; Z = [];
 
 while (1),
     iteration = iteration + 1;
@@ -99,10 +99,10 @@ while (1),
       lastMESSAGES(i,j)=prevMessage;
     end
 
-    % store message deltas
-    X = [ X MessageDelta(MESSAGES(ijij(1,1), ijij(1,2)), lastMESSAGES(ijij(1,1), ijij(1,2))) ];
-    Y = [ Y MessageDelta(MESSAGES(ijij(2,1), ijij(2,2)), lastMESSAGES(ijij(2,1), ijij(2,2))) ];
-    Z = [ Z MessageDelta(MESSAGES(ijij(3,1), ijij(3,2)), lastMESSAGES(ijij(3,1), ijij(3,2))) ];
+%     % store message deltas
+%     X = [ X MessageDelta(MESSAGES(ijij(1,1), ijij(1,2)), lastMESSAGES(ijij(1,1), ijij(1,2))) ];
+%     Y = [ Y MessageDelta(MESSAGES(ijij(2,1), ijij(2,2)), lastMESSAGES(ijij(2,1), ijij(2,2))) ];
+%     Z = [ Z MessageDelta(MESSAGES(ijij(3,1), ijij(3,2)), lastMESSAGES(ijij(3,1), ijij(3,2))) ];
 
     % Check for convergence every m iterations
     if mod(iteration, length(edgeFromIndx)) == 0
@@ -119,13 +119,13 @@ end;
 toc;
 disp(['Total number of messages passed: ', num2str(iteration)]);
 
-% plot message deltas
-I = 1:iteration;
-plot(I, X, 'r');
-hold on;
-plot(I, Y, 'g');
-hold on;
-plot(I, Z, 'b');
+% % plot message deltas
+% I = 1:iteration;
+% plot(I, (X), 'r-');
+% hold on;
+% plot(I, (Y), 'g-');
+% hold on;
+% plot(I, (Z), 'b-');
 
 
 % Compute final potentials and place them in P

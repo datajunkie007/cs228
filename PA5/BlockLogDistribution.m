@@ -52,6 +52,16 @@ LogBS = zeros(1, d);
 %
 % Also you should have only ONE for-loop, as for-loops are VERY slow in matlab
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+for i = 1:d
+    tempFactors = G.var2factors(1);
+    for j = 2:1:length(V)
+        tempFactors = unique([tempFactors G.var2factors(V(j))]);
+    end
+    for j = 1:length(tempFactors)
+        LogBS(i) = LogBS(i) + log(GetValueOfAssignment(i*ones(1,length(F(j).var))));
+    end
+end
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

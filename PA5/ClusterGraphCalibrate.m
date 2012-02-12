@@ -46,7 +46,9 @@ for m = 1:length(edgeFromIndx),
     % The matlab/octave functions 'intersect' and 'find' may
     % be useful here (for making your code faster)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+    [ MESSAGES(i,j).var, ia, ib ] = intersect(P.clusterList(i).var, P.clusterList(j).var);
+    MESSAGES(i,j).card = P.clusterList(i).card(ia);
+    MESSAGES(i,j).val = ones(1, prod(MESSAGES(i,j).card));
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end;
@@ -61,7 +63,7 @@ lastMESSAGES = MESSAGES;
 
 while (1),
     iteration = iteration + 1;
-    [i, j] = GetNextClusters(P, MESSAGES,lastMESSAGES, iteration, useSmartMP); 
+    [i, j] = GetNextClusters(P, MESSAGES, lastMESSAGES, iteration, useSmartMP); 
     prevMessage = MESSAGES(i,j);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,6 +77,15 @@ while (1),
     % obtain some speedup in this function
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
+    sepset = intersect(P.clusterList(i).var, P.clusterList(j).var);
+    tempf = P.clusterList(i);
+    for k = 1:size(MESSAGES, 1)
+        if k ~= j
+            tempf = FactorProduct(tempf, lastMESSAGES(k, i));
+        end
+    end
+    MESSAGES(i, j) = FactorMarginalization(tempf, setdiff(tempf.var, sepset));
+    MESSAGES(i, j).val = MESSAGES(i, j).val ./ sum(MESSAGES(i, j).val); % normalize
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     

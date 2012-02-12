@@ -26,7 +26,7 @@ function M = ComputeApproxMarginalsBP(F,E)
     
     clusterGraph = CreateClusterGraph(F,E);
     
-    P = ClusterGraphCalibrate(clusterGraph);
+    P = ClusterGraphCalibrate(clusterGraph, 1);
     
     vars = unique([P.clusterList(:).var]);
     

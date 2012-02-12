@@ -1,7 +1,7 @@
 %GETNEXTCLUSTERS Takes in a cluster graph and returns the indices
 %   of the nodes between which the next message should be passed.
 %
-%   [i j] = SmartGetNextClusters(P,Messages,oldMessages,m,useSmart)
+%   [i j] = SmartGetNextClusters(P,Messages,oldMessages,m)
 %
 %   INPUT
 %     P - our cluster graph
@@ -20,14 +20,42 @@
 
 function [i j] = SmartGetNextClusters(P,Messages,oldMessages,m)
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % YOUR CODE HERE
-    % Find the indices between which to pass a cluster
-    % The 'find' function may be useful
-    %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % YOUR CODE HERE
+  % Find the indices between which to pass a cluster
+  % The 'find' function may be useful
+  %
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  [lli, llj] = find(P.edges, prod(size(P.edges)));
+  numMessages = size(lli, 1);
+  % disp([ 'numMessages: ', int2str(numMessages), ' m: ', int2str(m) ]);
 
-end
 
+  if m >= numMessages
+    [ rows, cols ] = find(P.edges, numMessages);
+    maxdiff = 0;
+    for x = 1:size(rows)
+      d = MessageDelta( Messages(rows(x), cols(x)), oldMessages(rows(x), cols(x)) );
+      if d >= maxdiff
+        maxdiff = d;
+        i = rows(x);
+        j = cols(x);
+      end
+    end
+  else
+    [ rows, cols ] = find(P.edges, m+1);
+    i = rows(end);
+    j = cols(end);
+  end
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% disp([ 'getnext returning (', int2str(i), ', ', int2str(j), ')' ]);
+
+return;
+
+% Get the max difference between the marginal entries of 2 messages -------
+function delta = MessageDelta(Mes1, Mes2)
+  delta = max(abs(Mes1.val - Mes2.val));
+return;

@@ -27,16 +27,16 @@ function [i j] = SmartGetNextClusters(P,Messages,oldMessages,m)
   %
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  [lli, llj] = find(P.edges, prod(size(P.edges)));
-  numMessages = size(lli, 1);
+  [lli, llj] = find(P.edges~=0, prod(size(P.edges)));
+  numMessages = length(lli);
 
-  disp([ 'numMessages: ', int2str(numMessages), ' m: ', int2str(m) ]); % DEBUG
+  % disp([ 'numMessages: ', int2str(numMessages), ' m: ', int2str(m) ]); % DEBUG
 
   maxdiff = 0;
   if (m-1) >= numMessages
-    [ rows, cols ] = find(P.edges, numMessages);
+    [ rows, cols ] = find(P.edges~=0, numMessages);
     maxdiff = 0;
-    for x = 1:size(rows)
+    for x = 1:size(rows,1)
       d = MessageDelta( Messages(rows(x), cols(x)), oldMessages(rows(x), cols(x)) );
       if d >= maxdiff
         maxdiff = d;
@@ -50,7 +50,7 @@ function [i j] = SmartGetNextClusters(P,Messages,oldMessages,m)
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  disp([ 'getnext returning (', int2str(i), ', ', int2str(j), ') diff: ', num2str(maxdiff) ]); % DEBUG
+  % disp([ 'getnext returning (', int2str(i), ', ', int2str(j), ') diff: ', num2str(maxdiff) ]); % DEBUG
 
 return;
 

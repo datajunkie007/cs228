@@ -29,10 +29,11 @@ function [i j] = SmartGetNextClusters(P,Messages,oldMessages,m)
 
   [lli, llj] = find(P.edges, prod(size(P.edges)));
   numMessages = size(lli, 1);
-  % disp([ 'numMessages: ', int2str(numMessages), ' m: ', int2str(m) ]);
 
+  disp([ 'numMessages: ', int2str(numMessages), ' m: ', int2str(m) ]); % DEBUG
 
-  if m >= numMessages
+  maxdiff = 0;
+  if (m-1) >= numMessages
     [ rows, cols ] = find(P.edges, numMessages);
     maxdiff = 0;
     for x = 1:size(rows)
@@ -44,14 +45,12 @@ function [i j] = SmartGetNextClusters(P,Messages,oldMessages,m)
       end
     end
   else
-    [ rows, cols ] = find(P.edges, m+1);
-    i = rows(end);
-    j = cols(end);
+    [i j] = NaiveGetNextClusters(P, m);
   end
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% disp([ 'getnext returning (', int2str(i), ', ', int2str(j), ')' ]);
+  disp([ 'getnext returning (', int2str(i), ', ', int2str(j), ') diff: ', num2str(maxdiff) ]); % DEBUG
 
 return;
 

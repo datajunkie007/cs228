@@ -58,7 +58,7 @@ end;
 
 % perform loopy belief propagation
 tic;
-iteration = 0;
+iteration = -1;
 
 lastMESSAGES = MESSAGES;
 % 
@@ -69,7 +69,7 @@ lastMESSAGES = MESSAGES;
 
 while (1),
     iteration = iteration + 1;
-    [i, j] = GetNextClusters(P, MESSAGES, lastMESSAGES, iteration, useSmartMP); 
+    [i, j] = GetNextClusters(P, MESSAGES, lastMESSAGES, iteration, useSmartMP);
     prevMessage = MESSAGES(i,j);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

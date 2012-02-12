@@ -23,7 +23,10 @@ function [i, j] = NaiveGetNextClusters(P, m)
     % The 'find' function may be useful
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    [tempi,tempj] = find(P.edges,m+1);
+    [lli, llj] = find(P.edges, prod(size(P.edges)));
+    numMessages = size(lli, 1);
+    tempm = mod(m, numMessages);
+    [tempi, tempj] = find(P.edges, tempm+1);
     i = tempi(end);
     j = tempj(end);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

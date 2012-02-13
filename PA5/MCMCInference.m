@@ -73,14 +73,24 @@ if bSwendsenWang
               % Specify the q_{i,j}'s for Swendsen-Wang for variant 1
               %
               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+              q_ij = 0.5;
               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
           elseif strcmp(TransName, 'MHSwendsenWang2')
               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
               % YOUR CODE HERE (DO NOT TOUCH UNTIL PART 2)
               % Specify the q_{i,j}'s for Swendsen-Wang for variant 2
               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+              myAssign1 = 1:edge_factor.card(1);
+              myAssign1 = repmat(myAssign1, 1, 2);
+              myNumerator = sum( GetValueOfAssignment(edge_factor,myAssign1) );
+              myAssign2 = zeros(prod(edge_factor.card), 2);
+              for tempi = 1:size(myAssign2, 1)
+                for tempj = 1:size(myAssign2, 2)
+                  myAssign2( (tempi-1) * size(myAssign2,2) + tempj ) = [tempi, tempj];
+                end
+              end
+              myDenominator = sum(GetValueOfAssignment(edge_factor, myAssign2));
+              q_ij = myNumerator / myDenominator;
               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
           else
               disp('WARNING: unrecognized Swendsen-Wang name');

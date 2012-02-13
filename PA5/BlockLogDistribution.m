@@ -53,13 +53,23 @@ LogBS = zeros(1, d);
 % Also you should have only ONE for-loop, as for-loops are VERY slow in matlab
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vars = 1:length(G.names);
-others = setdiff(vars, V);
+vars = unique([F(:).var]);
+[dummy, mapV] = ismember(V, vars);
+[others, mapOthers] = setdiff(vars, V);
+
+ordering = [mapV mapOthers];
 
 firstMatrix = [1:d]';
 secondMatrix = repmat(firstMatrix, 1, length(V));
 thirdMatrix = repmat(A(others), d, 1);
 finalMatrix = [secondMatrix thirdMatrix];
+
+final(:, ordering) = finalMatrix;
+
+% fset = [];
+% for i = 1:length(V),
+%   fset = union(fset, G.var2factors{V(i)});
+% end
 
 for i = 1:length(F),
   LogBS = LogBS + log(GetValueOfAssignment(F(i), finalMatrix(:, F(i).var)));

@@ -103,6 +103,10 @@ end
 
 p = exp(log_QY_ratio) * (forward / backward);
 
+if variant == 2,
+    p = p * exp( LogR(old_value(1)) - LogR(new_value(1)) );
+end
+
 p_acceptance = min([ 1 p ]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

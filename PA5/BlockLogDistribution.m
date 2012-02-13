@@ -48,20 +48,22 @@ LogBS = zeros(1, d);
 %
 % NOTE: As this is called in the innermost loop of both Gibbs and Metropolis-
 % Hastings, you should make this fast.  You may want to make use of
-% G.var2factors, repmat,unique, and GetValueOfAssignment.
+% G.var2factors, repmat, unique, and GetValueOfAssignment.
 %
 % Also you should have only ONE for-loop, as for-loops are VERY slow in matlab
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-for i = 1:d
-    tempFactors = G.var2factors(1);
-    for j = 2:1:length(V)
-        tempFactors = unique([tempFactors G.var2factors(V(j))]);
-    end
-    for j = 1:length(tempFactors)
-        LogBS(i) = LogBS(i) + log(GetValueOfAssignment(i*ones(1,length(F(j).var))));
-    end
-end
 
+vars = 1:length(G.names);
+others = setdiff(vars, V);
+
+firstMatrix = [1:d]';
+secondMatrix = repmat(firstMatrix, 1, length(V));
+thirdMatrix = repmat(A(others), d, 1);
+finalMatrix = [secondMatrix thirdMatrix];
+
+for i = 1:length(F),
+  LogBS = LogBS + log(GetValueOfAssignment(F(i), finalMatrix(:, F(i).var)));
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -23,4 +23,11 @@ end
 % variable i
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+for i = 1:length(G.names)
+  for val = 1:M(i).card
+    p = sum(collected_samples(:, i) == val) / size(collected_samples, 1);
+    M(i) = SetValueOfAssignment(M(i), [ val ], p);
+  end
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

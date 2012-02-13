@@ -82,11 +82,11 @@ if bSwendsenWang
               %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
               myAssign1 = 1:edge_factor.card(1);
               myAssign1 = repmat(myAssign1', 1, 2);
-              myNumerator = sum( GetValueOfAssignment(edge_factor,myAssign1) );
+              myNumerator = sum( GetValueOfAssignment(edge_factor, myAssign1) );
               myAssign2 = zeros(prod(edge_factor.card), 2);
               for tempi = 1:edge_factor.card(1)
                 for tempj = 1:edge_factor.card(2)
-                  myAssign2( (tempi-1) * size(myAssign2,2) + tempj,: ) = [tempi, tempj];
+                  myAssign2( (tempi-1) * size(myAssign2,2) + tempj, : ) = [tempi, tempj];
                 end
               end
               myDenominator = sum(GetValueOfAssignment(edge_factor, myAssign2));

@@ -17,6 +17,16 @@ p_acceptance = 0.0;
 % Compute acceptance probability
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+forward = 1.0;
+backward = 1.0;
+
+for i = 1:length(F),
+  forward = forward * GetValueOfAssignment(F(i), A_prop(F(i).var) );
+  backward = backward * GetValueOfAssignment(F(i), A(F(i).var) );
+end
+
+p_acceptance = min([ 1 (forward / backward) ]);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Accept or reject proposal

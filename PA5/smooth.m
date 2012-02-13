@@ -11,7 +11,6 @@ len = length(Y);
 Smoother =zeros(len); 
 for i=1:len
   dev = min([mid-1 min([i-1 len-i])]);
-  dev
   Smoother(i,(i-dev):(i+dev))=1;
 end
 if(size(Y,2)>size(Y,1))

@@ -64,7 +64,7 @@ secondMatrix = repmat(firstMatrix, 1, length(V));
 thirdMatrix = repmat(A(others), d, 1);
 finalMatrix = [secondMatrix thirdMatrix];
 
-final(:, ordering) = finalMatrix;
+finalMatrix(:, ordering) = finalMatrix;
 
 % fset = [];
 % for i = 1:length(V),

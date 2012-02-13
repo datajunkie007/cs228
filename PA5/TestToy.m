@@ -1,14 +1,14 @@
 rand('seed', 1);
 
 % Construct the toy network
-[toy_network, toy_factors] = ConstructToyNetwork(0.3, 1);
+[toy_network, toy_factors] = ConstructToyNetwork(0.2, 1);
 toy_evidence = zeros(1, length(toy_network.names));
 %toy_clique_tree = CreateCliqueTree(toy_factors, []);
 %toy_cluster_graph = CreateClusterGraph(toy_factors,[]);
 
 % Exact Inference
-ExactM = ComputeExactMarginalsBP(toy_factors, toy_evidence, 0)
-figure, VisualizeToyImageMarginals(toy_network, ExactM);
+% ExactM = ComputeExactMarginalsBP(toy_factors, toy_evidence, 0)
+% figure, VisualizeToyImageMarginals(toy_network, ExactM);
 
 % Comment this in to run Approximate Inference on the toy network
 % Approximate Inference
@@ -32,14 +32,14 @@ for j = 1:length(transition_names)
         % A0 = i * ones(1, length(toy_network.names));
 
         [M, all_samples] = ...
-            MCMCInference(toy_network, toy_factors, toy_evidence, transition_names{j}, 0, 4000, 1, A0);
+            MCMCInference(toy_network, toy_factors, toy_evidence, transition_names{j}, 0, 1000, 1, A0);
         samples_list{i} = all_samples;
         figure, VisualizeToyImageMarginals(toy_network, M);
     end
  
-    vis_vars = [3];
+    vis_vars = [1 3];
     VisualizeMCMCMarginals(samples_list, vis_vars, toy_network.card(vis_vars), toy_factors, ...
-                           500, ExactM(vis_vars));
+                           500);
     disp(['Displaying results for MCMC with transition ', transition_names{j}]);
     disp(['Hit enter to continue']);
     pause;

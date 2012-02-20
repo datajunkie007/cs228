@@ -25,14 +25,16 @@ function [MEU OptimalDecisionRule] = OptimizeMEU( I )
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     EUF = CalculateExpectedUtilityFactor(I);
     OptimalDecisionRule = struct('var', [], 'card', [], 'val', []);
+    OptimalDecisionRule.var = EUF.var;
+    OptimalDecisionRule.card = EUF.card;
+    OptimalDecisionRule.val = zeros(prod(OptimalDecisionRule.card), 1);
     if length(EUF.var) < 2,
       [MEU myIndex] = max(EUF.val);
-      OptimalDecisionRule.var = EUF.var;
-      OptimalDecisionRule.card = EUF.card;
-      OptimalDecisionRule.val = zeros(prod(OptimalDecisionRule.card), 1);
       OptimalDecisionRule.val(myIndex) = 1;
     else
-      
+
+
+
     end
         
 

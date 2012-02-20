@@ -32,9 +32,24 @@ function [MEU OptimalDecisionRule] = OptimizeMEU( I )
       [MEU myIndex] = max(EUF.val);
       OptimalDecisionRule.val(myIndex) = 1;
     else
-
-
-
+      MEU = 0.0;
+      fullAssignment = IndexToAssignment([1:prod(OptimalDecisionRule.card)],OptimalDecisionRule.card);
+      for i = 1:prod(OptimalDecisionRule.card(2:end))
+          subAssignment = IndexToAssignment(i,OptimalDecisionRule.card(2:end));
+%           myIndex = find(all(fullAssignment(:,2:size(fullAssignment,2))==subAssignment));
+          myIndex = [];
+          for j = 1:size(fullAssignment,1)
+              if all(fullAssignment(j,2:size(fullAssignment,2))==subAssignment)
+                  myIndex = [myIndex;j];
+              end
+          end
+          Assignment = IndexToAssignment(myIndex,OptimalDecisionRule.card);
+          myValue = GetValueOfAssignment(EUF,Assignment);
+          [myMax mySubIndex] = max(myValue);
+          OptimalDecisionRule.val(myIndex) = 0;
+          OptimalDecisionRule.val(myIndex(mySubIndex)) = 1;
+          MEU = MEU + EUF.val(myIndex(mySubIndex));
+      end
     end
         
 

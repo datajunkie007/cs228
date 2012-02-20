@@ -29,7 +29,7 @@ function EU = SimpleCalcExpectedUtility(I)
   end
   parentU.val = parentU.val ./ sum(parentU.val);
   EU = 0.0;
-  [ dummy, mapU ] = ismember(parentU.var, U.var);
+  [ dummy, mapU ] = ismember(U.var, parentU.var);
   for i = 1:prod(parentU.card)
     assignment = IndexToAssignment(i, parentU.card);
     reorder = assignment(mapU);

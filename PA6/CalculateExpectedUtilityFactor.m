@@ -23,11 +23,11 @@ function EUF = CalculateExpectedUtilityFactor( I )
   D = I.DecisionFactors(1);
   U = I.UtilityFactors(1);
 
-  EUF.var = D.var;
-  EUF.card = D.card;
+%   EUF.var = D.var;
+%   EUF.card = D.card;
 
   allVars = unique([ F(:).var ]);
-  toKeep = union(D.var, []);
+  toKeep = D.var;
   toEliminate = setdiff(allVars, toKeep);
   factors = VariableElimination(F, toEliminate, []);
 

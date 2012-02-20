@@ -23,6 +23,11 @@ function EU = SimpleCalcExpectedUtility(I)
   allVars = unique([ F(:).var ]);
   toEliminate = setdiff(allVars, U.var);
   factors = VariableElimination(F, toEliminate, []);
-  EU = [ factors.val ] * U.val';
+  parentU = factors(1);
+  for i = 2:length(factors)
+    parentU = FactorProduct(parentU,factors(i));
+  end
+  parentU.val = parentU.val/sum(parentU.val);
+  EU = parentU.val * U.val';
   
 end

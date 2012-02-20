@@ -16,6 +16,26 @@ function EUF = CalculateExpectedUtilityFactor( I )
   %
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 
+  EUF = struct('var', [], 'card', [], 'val', []);
 
+  F = [ I.RandomFactors I.UtilityFactors ];
+  X = I.RandomFactors;
+  D = I.DecisionFactors(1);
+  U = I.UtilityFactors(1);
+
+  EUF.var = D.var;
+  EUF.card = D.card;
+
+  allVars = unique([ F(:).var ]);
+  toKeep = union(D.var, []);
+  toEliminate = setdiff(allVars, toKeep);
+  factors = VariableElimination(F, toEliminate, []);
+
+  parentsD = factors(1);
+  for i = 2:length(factors),
+    parentsD = FactorProduct(parentsD, factors(i));
+  end
+
+  EUF = parentsD;
   
 end  

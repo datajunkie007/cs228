@@ -1,4 +1,4 @@
-function EU = SimpleCalculateExpectedUtility(I)
+function EU = SimpleCalcExpectedUtility(I)
 
   % Inputs: An influence diagram, I (as described in the writeup).
   %         I.RandomFactors = list of factors for each random variable.  These are CPDs, with
@@ -20,7 +20,9 @@ function EU = SimpleCalculateExpectedUtility(I)
   %
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- 
-  
+  allVars = unique([ F(:).var ]);
+  toEliminate = setdiff(allVars, U.var);
+  factors = VariableElimination(F, toEliminate, []);
+  EU = [ factors.val ] * U.val';
   
 end

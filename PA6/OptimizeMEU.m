@@ -36,7 +36,6 @@ function [MEU OptimalDecisionRule] = OptimizeMEU( I )
       fullAssignment = IndexToAssignment([1:prod(OptimalDecisionRule.card)],OptimalDecisionRule.card);
       for i = 1:prod(OptimalDecisionRule.card(2:end))
           subAssignment = IndexToAssignment(i,OptimalDecisionRule.card(2:end));
-%           myIndex = find(all(fullAssignment(:,2:size(fullAssignment,2))==subAssignment));
           myIndex = [];
           for j = 1:size(fullAssignment,1)
               if all(fullAssignment(j,2:size(fullAssignment,2))==subAssignment)

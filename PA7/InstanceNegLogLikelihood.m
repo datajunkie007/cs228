@@ -65,3 +65,15 @@ function [cost] = regularization_cost(lambda, thetas)
     cost = lambda / 2.0 * sum(sq_thetas);
     return;
 end
+
+%% factors_from_features: see the name
+function [factors] = factors_from_features(features)
+    factors = repmat(EmptyFactorStruct(), length(features), 1);
+    for i = 1:length(features),
+        factors(i).var = features(i).var;
+        factors(i).card = ones(length(features(i).var), 1) .* 2;
+        factors(i).val = zeros(prod(factors(i).card), 1);
+        factors(i) = SetValueOfAssignment(factors(i), features(i).assignment, 1);
+    end
+    return;
+end

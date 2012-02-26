@@ -56,6 +56,13 @@ function [nll, grad] = InstanceNegLogLikelihood(X, y, theta, modelParams)
     %%%
     % Your code here:
 
+    factors = factors_from_features(featureSet.features, modelParams);
+
+    ctree = CreateCliqueTree(factors);
+
+    nll = ctree;
+    grad = ctree;
+
     return;
 end
 
@@ -67,12 +74,12 @@ function [cost] = regularization_cost(lambda, thetas)
 end
 
 %% factors_from_features: see the name
-function [factors] = factors_from_features(features)
+function [factors] = factors_from_features(features, modelParams)
     factors = repmat(EmptyFactorStruct(), length(features), 1);
     for i = 1:length(features),
         factors(i).var = features(i).var;
-        factors(i).card = ones(length(features(i).var), 1) .* 2;
-        factors(i).val = zeros(prod(factors(i).card), 1);
+        factors(i).card = ones(1, length(features(i).var)) .* modelParams.numHiddenStates;
+        factors(i).val = zeros(1, prod(factors(i).card));
         factors(i) = SetValueOfAssignment(factors(i), features(i).assignment, 1);
     end
     return;

@@ -79,8 +79,8 @@ function [factors] = factors_from_features(features, thetas, modelParams)
     for i = 1:length(features),
         factors(i).var = features(i).var;
         factors(i).card = ones(1, length(features(i).var)) .* modelParams.numHiddenStates;
-        factors(i).val = zeros(1, prod(factors(i).card));
-        factors(i) = SetValueOfAssignment(factors(i), features(i).assignment, thetas(features(i).paramIdx));
+        factors(i).val = ones(1, prod(factors(i).card));
+        factors(i) = SetValueOfAssignment(factors(i), features(i).assignment, exp(thetas(features(i).paramIdx)));
     end
     return;
 end

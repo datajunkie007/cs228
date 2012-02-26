@@ -58,10 +58,11 @@ function [nll, grad] = InstanceNegLogLikelihood(X, y, thetas, modelParams)
 
     factors = factors_from_features(featureSet.features, thetas, modelParams);
 
-    ctree = CreateCliqueTree(factors);
+    P = CreateCliqueTree(factors);
+    [ P logZ ] = CliqueTreeCalibrate(P, 0);
 
-    nll = ctree;
-    grad = ctree;
+    nll = P;
+    grad = logZ;
 
     return;
 end

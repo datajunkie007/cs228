@@ -16,7 +16,7 @@
 % nll          Negative log-likelihood of the data.    (scalar)
 % grad         Gradient of nll with respect to theta   (numParams x 1 vector)
 
-function [nll, grad] = InstanceNegLogLikelihood(X, y, theta, modelParams)
+function [nll, grad] = InstanceNegLogLikelihood(X, y, thetas, modelParams)
 
     % featureSet is a struct with two fields:
     %    .numParams - the number of parameters in the CRF (this is not numImageFeatures
@@ -33,8 +33,8 @@ function [nll, grad] = InstanceNegLogLikelihood(X, y, theta, modelParams)
     %   
     %   feature = struct('var', [2 3], 'assignment', [5 6], 'paramIdx', 8);
     %
-    % then feature is an indicator function over X_2 and X_3, which takes on a value of 1
-    % if X_2 = 5 and X_3 = 6 (which would be 'e' and 'f'), and 0 otherwise. 
+    % then feature is an indicator function over Y_2 and Y_3, which takes on a value of 1
+    % if Y_2 = 5 and Y_3 = 6 (which would be 'e' and 'f'), and 0 otherwise.
     % Its contribution to the log-likelihood would be theta(8) if it's 1, and 0 otherwise.
     %
     % If you're interested in the implementation details of CRFs, 
@@ -56,7 +56,7 @@ function [nll, grad] = InstanceNegLogLikelihood(X, y, theta, modelParams)
     %%%
     % Your code here:
 
-    factors = factors_from_features(featureSet.features, modelParams);
+    factors = factors_from_features(featureSet.features, thetas, modelParams);
 
     ctree = CreateCliqueTree(factors);
 
@@ -74,13 +74,13 @@ function [cost] = regularization_cost(lambda, thetas)
 end
 
 %% factors_from_features: see the name
-function [factors] = factors_from_features(features, modelParams)
+function [factors] = factors_from_features(features, thetas, modelParams)
     factors = repmat(EmptyFactorStruct(), length(features), 1);
     for i = 1:length(features),
         factors(i).var = features(i).var;
         factors(i).card = ones(1, length(features(i).var)) .* modelParams.numHiddenStates;
         factors(i).val = zeros(1, prod(factors(i).card));
-        factors(i) = SetValueOfAssignment(factors(i), features(i).assignment, 1);
+        factors(i) = SetValueOfAssignment(factors(i), features(i).assignment, thetas(features(i).paramIdx));
     end
     return;
 end

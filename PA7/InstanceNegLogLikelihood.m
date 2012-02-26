@@ -56,4 +56,12 @@ function [nll, grad] = InstanceNegLogLikelihood(X, y, theta, modelParams)
     %%%
     % Your code here:
 
+    return;
+end
+
+%% regularization_cost: calculates it
+function [cost] = regularization_cost(lambda, thetas)
+    sq_thetas = thetas .^ 2;
+    cost = lambda / 2.0 * sum(sq_thetas);
+    return;
 end

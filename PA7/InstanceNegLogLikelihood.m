@@ -67,9 +67,9 @@ function [nll, grad] = InstanceNegLogLikelihood(X, y, thetas, modelParams)
 
     nll = logZ - sum(weighted_counts) + reg_cost;
 
-    pyx = exp (-logZ + weighted_counts);
+    % pyx = exp (-logZ + weighted_counts);
 
-    grad = calculate_gradient(logZ);
+    grad = calculate_gradient(featureSet.numParams, featureSet.features, weighted_counts, unweighted_counts, modelParams.lambda, thetas, logZ);
 
     return;
 end
@@ -107,7 +107,7 @@ function [counts, weighted] = feature_counts(Y, features, thetas)
 end
 
 %% calculate_gradient: see description
-function [grad] = calculate_gradient()
+function [grad] = calculate_gradient(numParams, features, weighted_counts, unweighted_counts, lambda, thetas, logZ)
     grad = zeros(1, numParams);
     for i = 1:numParams
         pf = 0.0;
@@ -116,10 +116,9 @@ function [grad] = calculate_gradient()
             if (features(i).paramIdx == i)
                 pf = pf + weighted_counts(j);
                 ed = ed + unweighted_counts(j);
-                features(i).var;
             end
         end
-        etheta = exp(-logZ + pf)
+        etheta = exp(-logZ + pf);
         grad(i) = etheta - ed + lambda * thetas(i);
     end
 end

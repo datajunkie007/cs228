@@ -61,8 +61,15 @@ function [nll, grad] = InstanceNegLogLikelihood(X, y, thetas, modelParams)
     P = CreateCliqueTree(factors);
     [ P logZ ] = CliqueTreeCalibrate(P, 0);
 
-    nll = P;
-    grad = logZ;
+    reg_cost = regularization_cost(modelParams.lambda, thetas);
+
+    [unweighted_counts weighted_counts] = feature_counts(y, featureSet.features, thetas);
+
+    nll = logZ - sum(weighted_counts) + reg_cost;
+
+    pyx = exp (-logZ + weighted_counts);
+
+    grad = calculate_gradient(logZ);
 
     return;
 end
@@ -84,4 +91,35 @@ function [factors] = factors_from_features(features, thetas, modelParams)
         factors(i) = SetValueOfAssignment(factors(i), features(i).assignment, exp(thetas(features(i).paramIdx)));
     end
     return;
+end
+
+%% feature_counts: see description
+function [counts, weighted] = feature_counts(Y, features, thetas)
+    counts = zeros(length(features), 1);
+    weighted = zeros(length(features), 1);
+    for i = 1:length(features)
+        if all(Y(features(i).var)==features(i).assignment)
+            counts(i) = 1;
+            weighted(i) = thetas(features(i).paramIdx);
+        end
+    end
+    return;
+end
+
+%% calculate_gradient: see description
+function [grad] = calculate_gradient()
+    grad = zeros(1, numParams);
+    for i = 1:numParams
+        pf = 0.0;
+        ed = 0.0;
+        for j = 1:length(features)
+            if (features(i).paramIdx == i)
+                pf = pf + weighted_counts(j);
+                ed = ed + unweighted_counts(j);
+                features(i).var;
+            end
+        end
+        etheta = exp(-logZ + pf)
+        grad(i) = etheta - ed + lambda * thetas(i);
+    end
 end

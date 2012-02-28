@@ -69,7 +69,7 @@ function [nll, grad] = InstanceNegLogLikelihood(X, y, thetas, modelParams)
 
     % pyx = exp (-logZ + weighted_counts);
 
-    grad = calculate_gradient(featureSet.numParams, featureSet.features, weighted_counts, unweighted_counts, modelParams.lambda, thetas, logZ);
+    grad = calculate_gradient(P, featureSet.numParams, featureSet.features, unweighted_counts, modelParams.lambda, thetas);
 
     return;
 end
@@ -107,18 +107,29 @@ function [counts, weighted] = feature_counts(Y, features, thetas)
 end
 
 %% calculate_gradient: see description
-function [grad] = calculate_gradient(numParams, features, weighted_counts, unweighted_counts, lambda, thetas, logZ)
+function [grad] = calculate_gradient(P, numParams, features, unweighted_counts, lambda, thetas)
     grad = zeros(1, numParams);
-    for i = 1:numParams
-        pf = 0.0;
-        ed = 0.0;
-        for j = 1:length(features)
-            if (features(i).paramIdx == i)
-                pf = pf + weighted_counts(j);
-                ed = ed + unweighted_counts(j);
+    ed = zeros(1,numParams);
+    etheta = zeros(1,numParams);
+    for j = 1:length(features)
+        ed(features(j).paramIdx) = ed(features(j).paramIdx) + unweighted_counts(j);
+    end
+    for i = 1:length(features)
+        Idx = features(i).paramIdx;
+        cliqueIdx = 0;
+        for j = 1:length(P.cliqueList)
+            if all(ismember(features(i).var,P.cliqueList(j).var))
+                cliqueIdx = j;
+                break;
             end
         end
-        etheta = exp(-logZ + pf);
-        grad(i) = etheta - ed + lambda * thetas(i);
+        VarToEle = setdiff(P.cliqueList(cliqueIdx).var, features(i).var);
+        tempFactor = FactorMarginalization(P.cliqueList(cliqueIdx),VarToEle);
+        PIdx = AssignmentToIndex(features(i).assignment,tempFactor.card);
+        etheta(Idx) = etheta(Idx) + tempFactor.val(PIdx) / sum(tempFactor.val);
     end
+    for i = 1:numParams
+        grad(i) = etheta(i) - ed(i) + lambda*thetas(i);
+    end
+    
 end

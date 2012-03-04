@@ -23,7 +23,7 @@ function loglikelihood = ComputeLogLikelihood(P, G, dataset)
 N = size(dataset,1); % number of examples
 K = length(P.c); % number of classes
 
-loglikelihood = -Inf;
+loglikelihood = 0;
 
 % You should compute the log likelihood of data as in eq. (12) and (13)
 % in the PA description
@@ -36,6 +36,7 @@ loglikelihood = -Inf;
 
 for i=1:N
 
+  ll = -Inf;
   for k=1:K
     lpk = log(P.c(k));
     lpoi = 0;
@@ -63,7 +64,8 @@ for i=1:N
       end
     end
 
-    loglikelihood = log( exp(loglikelihood) + exp(lpk + lpoi) );
+    ll = log( exp(ll) + exp(lpk + lpoi) );
   end
 
+  loglikelihood = loglikelihood + ll;
 end

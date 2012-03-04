@@ -65,21 +65,23 @@ for part = 1:numparts
 
     else
 
-      U(:, 1) = ones(sum(labels(:,k) == 1), 1);
-      U(:, 2) = dataset(labels(:,k) == 1, parentpart, 1);
-      U(:, 3) = dataset(labels(:,k) == 1, parentpart, 2);
-      U(:, 4) = dataset(labels(:,k) == 1, parentpart, 3);
+      U(:, 1) = dataset(labels(:,k) == 1, parentpart, 1);
+      U(:, 2) = dataset(labels(:,k) == 1, parentpart, 2);
+      U(:, 3) = dataset(labels(:,k) == 1, parentpart, 3);
 
       [Beta, sigma] = FitLinearGaussianParameters(dataset(labels(:,k) == 1, part, 1), U);
-      P.clg(part).theta(k, 1:4) = Beta;
+      P.clg(part).theta(k, 1) = Beta(4);
+      P.clg(part).theta(k, 2:4) = Beta(1:3);
       P.clg(part).sigma_y(k) = sigma;
 
       [Beta, sigma] = FitLinearGaussianParameters(dataset(labels(:,k) == 1, part, 2), U);
-      P.clg(part).theta(k, 5:8) = Beta;
+      P.clg(part).theta(k, 5) = Beta(4);
+      P.clg(part).theta(k, 6:8) = Beta(1:3);
       P.clg(part).sigma_x(k) = sigma;
 
       [Beta, sigma] = FitLinearGaussianParameters(dataset(labels(:,k) == 1, part, 3), U);
-      P.clg(part).theta(k, 9:12) = Beta;
+      P.clg(part).theta(k, 9) = Beta(4);
+      P.clg(part).theta(k, 10:12) = Beta(1:3);
       P.clg(part).sigma_angle(k) = sigma;
 
     end

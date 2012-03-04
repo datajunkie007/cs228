@@ -36,7 +36,7 @@ nums = sum(labels, 1);
 
 P.c = nums ./ sum(nums);
 
-P.clg = repmat( struct('mu_y': [], 'sigma_y': [], 'mu_x': [], 'sigma_x': [], 'mu_angle': [], 'sigma_angle': [], 'theta': []), 1, numparts);
+P.clg = repmat( struct('mu_y', [], 'sigma_y', [], 'mu_x', [], 'sigma_x', [], 'mu_angle', [], 'sigma_angle', [], 'theta', [] ), 1, numparts);
 
 for part = 1:numparts
 
@@ -66,9 +66,9 @@ for part = 1:numparts
     else
 
       U(:, 1) = ones(sum(labels(:,k) == 1), 1);
-      U(:, 2) = dataset(labels(:,k) == 1), parentpart, 1);
-      U(:, 3) = dataset(labels(:,k) == 1), parentpart, 2);
-      U(:, 4) = dataset(labels(:,k) == 1), parentpart, 3);
+      U(:, 2) = dataset(labels(:,k) == 1, parentpart, 1);
+      U(:, 3) = dataset(labels(:,k) == 1, parentpart, 2);
+      U(:, 4) = dataset(labels(:,k) == 1, parentpart, 3);
 
       [Beta, sigma] = FitLinearGaussianParameters(dataset(labels(:,k) == 1, part, 1), U);
       P.clg(part).theta(k, 1:4) = Beta;

@@ -65,6 +65,7 @@ for part = 1:numparts
 
     else
 
+      U = [];
       U(:, 1) = dataset(labels(:,k) == 1, parentpart, 1);
       U(:, 2) = dataset(labels(:,k) == 1, parentpart, 2);
       U(:, 3) = dataset(labels(:,k) == 1, parentpart, 3);

@@ -30,7 +30,7 @@ for i = 1:numparts
   for j = 1:numparts
     Oi(:,:) = dataset(:, i, :);
     Oj(:,:) = dataset(:, j, :);
-    W(i,j) = N * GaussianMutualInformation(Oi, Oj);
+    W(i,j) = GaussianMutualInformation(Oi, Oj);
   end
 end
 

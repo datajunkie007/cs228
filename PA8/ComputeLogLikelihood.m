@@ -44,22 +44,22 @@ for i=1:N
 
       parentpart = 0;
       if (length(size(G)) == 2 && G(part,1) == 1)
-        parentpart = G(i, 2);
+        parentpart = G(part, 2);
       elseif ( length(size(G)) == 3 && G(part,1, k) == 1)
-        parentpart = G(i, 2, k);
+        parentpart = G(part, 2, k);
       end
 
       if ( parentpart == 0 )
-        l2 = l2 + lognormpdf( dataset(i, part, 1), P.clg(i).mu_y(k), P.clg(i).sigma_y(k) );
-        l2 = l2 + lognormpdf( dataset(i, part, 2), P.clg(i).mu_x(k), P.clg(i).sigma_x(k) );
-        l2 = l2 + lognormpdf( dataset(i, part, 3), P.clg(i).mu_angle(k), P.clg(i).sigma_angle(k) );
+        l2 = l2 + lognormpdf( dataset(i, part, 1), P.clg(part).mu_y(k), P.clg(part).sigma_y(k) );
+        l2 = l2 + lognormpdf( dataset(i, part, 2), P.clg(part).mu_x(k), P.clg(part).sigma_x(k) );
+        l2 = l2 + lognormpdf( dataset(i, part, 3), P.clg(part).mu_angle(k), P.clg(part).sigma_angle(k) );
       else
-        mu_y = P.clg(i).theta(k, 1) + P.clg(i).theta(k, 2) * dataset(i, parentpart, 1) + P.clg(i).theta(k, 3) * dataset(i, parentpart, 2) + P.clg(i).theta(k, 4) * dataset(i, parentpart, 3);
-        mu_x = P.clg(i).theta(k, 5) + P.clg(i).theta(k, 6) * dataset(i, parentpart, 1) + P.clg(i).theta(k, 7) * dataset(i, parentpart, 2) + P.clg(i).theta(k, 8) * dataset(i, parentpart, 3);
-        mu_angle = P.clg(i).theta(k, 9) + P.clg(i).theta(k, 10) * dataset(i, parentpart, 1) + P.clg(i).theta(k, 11) * dataset(i, parentpart, 2) + P.clg(i).theta(k, 12) * dataset(i, parentpart, 3);
-        l2 = l2 + lognormpdf( dataset(i, part, 1), mu_y, P.clg(i).sigma_y(k) );
-        l2 = l2 + lognormpdf( dataset(i, part, 2), mu_x, P.clg(i).sigma_x(k) );
-        l2 = l2 + lognormpdf( dataset(i, part, 3), mu_angle, P.clg(i).sigma_angle(k) );
+        mu_y = P.clg(part).theta(k, 1) + P.clg(part).theta(k, 2) * dataset(i, parentpart, 1) + P.clg(part).theta(k, 3) * dataset(i, parentpart, 2) + P.clg(part).theta(k, 4) * dataset(i, parentpart, 3);
+        mu_x = P.clg(part).theta(k, 5) + P.clg(part).theta(k, 6) * dataset(i, parentpart, 1) + P.clg(part).theta(k, 7) * dataset(i, parentpart, 2) + P.clg(part).theta(k, 8) * dataset(i, parentpart, 3);
+        mu_angle = P.clg(part).theta(k, 9) + P.clg(part).theta(k, 10) * dataset(i, parentpart, 1) + P.clg(part).theta(k, 11) * dataset(i, parentpart, 2) + P.clg(part).theta(k, 12) * dataset(i, parentpart, 3);
+        l2 = l2 + lognormpdf( dataset(i, part, 1), mu_y, P.clg(part).sigma_y(k) );
+        l2 = l2 + lognormpdf( dataset(i, part, 2), mu_x, P.clg(part).sigma_x(k) );
+        l2 = l2 + lognormpdf( dataset(i, part, 3), mu_angle, P.clg(part).sigma_angle(k) );
       end
     end
 

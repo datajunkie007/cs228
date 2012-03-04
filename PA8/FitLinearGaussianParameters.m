@@ -63,7 +63,7 @@ Beta = A\B;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-CXX = var(X);
+CXX = mean(X.*X) - mean(X)*mean(X);
 sum = CXX;
 for i = 1:N
     for j = 1:N

@@ -63,12 +63,13 @@ Beta = A\B;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-CXX = var(X);
-sum = CXX;
+sigma = mean(X .^ 2) - mean(X) ^ 2;
+
 for i = 1:N
     for j = 1:N
         Cov = mean(U(:,i).*U(:,j))-mean(U(:,i))*mean(U(:,j));
-        sum = sum - Beta(i)*Beta(j)*Cov;
+        sigma = sigma - Beta(i)*Beta(j)*Cov;
     end
 end
-sigma = sqrt(sum);
+
+sigma = sqrt(sigma);

@@ -16,7 +16,8 @@ function [P loglikelihood] = LearnCPDsGivenGraph(dataset, G, labels)
 % loglikelihood: log-likelihood of the data (scalar)
 
 N = size(dataset, 1);
-K = size(labels,2);
+K = size(labels, 2);
+numparts = 10;
 
 loglikelihood = 0;
 P.c = zeros(1,K);
@@ -30,5 +31,63 @@ P.c = zeros(1,K);
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fprintf('log likelihood: %f\n', loglikelihood);
 
+nums = sum(labels, 1);
+
+P.c = nums ./ sum(nums);
+
+P.clg = repmat( struct('mu_y': [], 'sigma_y': [], 'mu_x': [], 'sigma_x': [], 'mu_angle': [], 'sigma_angle': [], 'theta': []), 1, numparts);
+
+for part = 1:numparts
+
+  for k=1:K
+
+    parentpart = 0;
+    if (length(size(G)) == 2 && G(part, 1) == 1)
+      parentpart = G(part, 2);
+    elseif ( length(size(G)) == 3 && G(part, 1, k) == 1)
+      parentpart = G(part, 2, k);
+    end
+
+    if parentpart == 0
+
+      [mu, sigma] = FitGaussianParameters(dataset(labels(:,k) == 1, part, 1));
+      P.clg(part).mu_y(k) = mu;
+      P.clg(part).sigma_y(k) = sigma;
+
+      [mu, sigma] = FitGaussianParameters(dataset(labels(:,k) == 1, part, 2));
+      P.clg(part).mu_x(k) = mu;
+      P.clg(part).sigma_x(k) = sigma;
+
+      [mu, sigma] = FitGaussianParameters(dataset(labels(:,k) == 1, part, 3));
+      P.clg(part).mu_angle(k) = mu;
+      P.clg(part).sigma_angle(k) = sigma;
+
+    else
+
+      U(:, 1) = ones(sum(labels(:,k) == 1), 1);
+      U(:, 2) = dataset(labels(:,k) == 1), parentpart, 1);
+      U(:, 3) = dataset(labels(:,k) == 1), parentpart, 2);
+      U(:, 4) = dataset(labels(:,k) == 1), parentpart, 3);
+
+      [Beta, sigma] = FitLinearGaussianParameters(dataset(labels(:,k) == 1, part, 1), U);
+      P.clg(part).theta(k, 1:4) = Beta;
+      P.clg(part).sigma_y(k) = sigma;
+
+      [Beta, sigma] = FitLinearGaussianParameters(dataset(labels(:,k) == 1, part, 2), U);
+      P.clg(part).theta(k, 5:8) = Beta;
+      P.clg(part).sigma_x(k) = sigma;
+
+      [Beta, sigma] = FitLinearGaussianParameters(dataset(labels(:,k) == 1, part, 3), U);
+      P.clg(part).theta(k, 9:12) = Beta;
+      P.clg(part).sigma_angle(k) = sigma;
+
+    end
+
+  end
+
+end
+
+loglikelihood = ComputeLogLikelihood(P, G, dataset);
+
+fprintf('log likelihood: %f\n', loglikelihood);

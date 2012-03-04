@@ -30,7 +30,18 @@ sigma = 1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+A = zeros(N+1);
+for i = 1:N
+    A(1,i) = mean(U(:,i));
+end
+A(1,N+1) = 1;
+A(2:N+1,N+1) = A(1,1:N)';
+for i = 2:N+1
+    for j = 1:N
+        %E[U(j)*U(i-1)]
+        A(i,j) = mean(U(:,j).*U(:,i-1));
+    end
+end
 
 % B = [ E[X]; E[X*U(1)]; ... ; E[X*U(n)] ]
 
@@ -38,13 +49,26 @@ sigma = 1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+B = zeros(N+1,1);
+B(1) = mean(X);
+for j = 2:N+1
+    B(j) = mean(X.*U(:,j-1));
+end
 % solve A*Beta = B
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+Beta = A\B;
 % then compute sigma according to eq. (11) in PA description
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+CXX = var(X);
+sum = CXX;
+for i = 1:N
+    for j = 1:N
+        Cov = mean(U(:,i).*U(:,j))-mean(U(:,i))*mean(U(:,j));
+        sum = sum - Beta(i)*Beta(j)*Cov;
+    end
+end
+sigma = sqrt(sum);

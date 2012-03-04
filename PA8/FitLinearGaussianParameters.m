@@ -30,6 +30,7 @@ sigma = 1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 A = zeros(N+1);
 for i = 1:N
     A(1,i) = mean(U(:,i));
@@ -49,20 +50,25 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 B = zeros(N+1,1);
 B(1) = mean(X);
 for j = 2:N+1
     B(j) = mean(X.*U(:,j-1));
 end
+
 % solve A*Beta = B
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 Beta = A\B;
+
 % then compute sigma according to eq. (11) in PA description
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 sigma = mean(X .^ 2) - mean(X) ^ 2;
 
 for i = 1:N

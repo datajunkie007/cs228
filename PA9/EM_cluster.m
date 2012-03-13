@@ -24,6 +24,7 @@ function [P loglikelihood ClassProb] = EM_cluster(poseData, G, InitialClassProb,
 % Initialize variables
 N = size(poseData, 1);
 K = size(InitialClassProb, 2);
+numparts = size(poseData, 2);
 
 ClassProb = InitialClassProb;
 
@@ -45,6 +46,64 @@ for iter=1:maxIter
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  for k=1:K
+    P.c(k) = sum(ClassProb(:,k)); % normalized
+  end
+
+  for part = 1:numparts
+
+    for k=1:K
+
+      parentpart = 0;
+      if (length(size(G)) == 2 && G(part, 1) == 1)
+        parentpart = G(part, 2);
+      elseif ( length(size(G)) == 3 && G(part, 1, k) == 1)
+        parentpart = G(part, 2, k);
+      end
+
+      if parentpart == 0
+
+        [mu, sigma] = FitGaussianParameters(poseData(:, part, 1), ClassProb(:, k));
+        P.clg(part).mu_y(k) = mu;
+        P.clg(part).sigma_y(k) = sigma;
+
+        [mu, sigma] = FitGaussianParameters(poseData(:, part, 2), ClassProb(:, k));
+        P.clg(part).mu_x(k) = mu;
+        P.clg(part).sigma_x(k) = sigma;
+
+        [mu, sigma] = FitGaussianParameters(poseData(:, part, 3), ClassProb(:, k));
+        P.clg(part).mu_angle(k) = mu;
+        P.clg(part).sigma_angle(k) = sigma;
+
+      else
+
+        U = [];
+        U(:, 1) = poseData(:, parentpart, 1);
+        U(:, 2) = poseData(:, parentpart, 2);
+        U(:, 3) = poseData(:, parentpart, 3);
+
+        [Beta, sigma] = FitLinearGaussianParameters(poseData(:, part, 1), U, ClassProb(:, k));
+        P.clg(part).theta(k, 1) = Beta(4);
+        P.clg(part).theta(k, 2:4) = Beta(1:3);
+        P.clg(part).sigma_y(k) = sigma;
+
+        [Beta, sigma] = FitLinearGaussianParameters(poseData(:, part, 2), U, ClassProb(:, k));
+        P.clg(part).theta(k, 5) = Beta(4);
+        P.clg(part).theta(k, 6:8) = Beta(1:3);
+        P.clg(part).sigma_x(k) = sigma;
+
+        [Beta, sigma] = FitLinearGaussianParameters(poseData(:, part, 3), U, ClassProb(:, k));
+        P.clg(part).theta(k, 9) = Beta(4);
+        P.clg(part).theta(k, 10:12) = Beta(1:3);
+        P.clg(part).sigma_angle(k) = sigma;
+
+      end
+
+    end
+
+  end
+
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   

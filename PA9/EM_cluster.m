@@ -124,20 +124,66 @@ for iter=1:maxIter
   % probability normalization in log space to avoid numerical issues
   
   ClassProb = zeros(N,K);
+  JointProb = zeros(N,K);
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+  for part=1:numparts
+    for example=1:N
+      for k=1:K
+        
+        JointProb(example, k) = log(P.c(k));
+        
+        parentpart = 0;
+        if (length(size(G)) == 2 && G(part, 1) == 1)
+          parentpart = G(part, 2);
+        elseif ( length(size(G)) == 3 && G(part, 1, k) == 1)
+          parentpart = G(part, 2, k);
+        end
+        
+        if (parentpart == 0)
+          pdf_y = lognormpdf(poseData(example, part, 1), P.clg(part).mu_y(k), P.clg(part).sigma_y(k));
+          pdf_x = lognormpdf(poseData(example, part, 2), P.clg(part).mu_x(k), P.clg(part).sigma_x(k));
+          pdf_angle = lognormpdf(poseData(example, part, 3), P.clg(part).mu_angle(k), P.clg(part).sigma_angle(k));
+
+          JointProb(example, k) = logsumexp( [ JointProb(example, k) pdf_y pdf_x pdf_angle ] );
+        else
+          parent_y = poseData(example, parentpart, 1);
+          parent_x = poseData(example, parentpart, 2);
+          parent_alpha = poseData(example, parentpart, 3);
+          parentals = [ parent_y parent_x parent_alpha ];
+
+          mu = P.clg(part).theta(k, 1) + parentals * P.clg(part).theta(k, 2:4)';
+          sigma = P.clg(part).sigma_y(k);
+          pdf_y = lognormpdf(poseData(example, part, 1), mu, sigma);
+          
+          mu = P.clg(part).theta(k, 5) + parentals * P.clg(part).theta(k, 6:8)';
+          sigma = P.clg(part).sigma_x(k);
+          pdf_x = lognormpdf(poseData(example, part, 2), mu, sigma);
+          
+          mu = P.clg(part).theta(k, 9) + parentals * P.clg(part).theta(k, 10:12)';
+          sigma = P.clg(part).sigma_angle(k);
+          pdf_angle = lognormpdf(poseData(example, part, 3), mu, sigma);
+          
+          JointProb(example, k) = logsumexp( [ JointProb(example, k) pdf_y pdf_x pdf_angle ] );
+        end
+        
+      end
+    end
+  end
+  ProbSum = logsumexp(JointProb);
+  ClassProb = JointProb - repmat(ProbSum,1,K);
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   % Compute log likelihood of dataset for this iteration
   % Hint: You should use the logsumexp() function here
-  loglikelihood(iter) = 0;
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  
+  loglikelihood(iter) = logsumexp(logsumexp(JointProb));
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   % Print out loglikelihood

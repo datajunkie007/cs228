@@ -175,6 +175,7 @@ for iter=1:maxIter
   end
   ProbSum = logsumexp(JointProb);
   ClassProb = JointProb - repmat(ProbSum,1,K);
+  ClassProb = exp(ClassProb);
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -183,7 +184,7 @@ for iter=1:maxIter
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  loglikelihood(iter) = logsumexp(logsumexp(JointProb));
+  loglikelihood(iter) = logsumexp((logsumexp(JointProb))');
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   % Print out loglikelihood

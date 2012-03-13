@@ -47,8 +47,9 @@ for iter=1:maxIter
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+  totalprob = sum(sum(ClassProb));
   for k=1:K
-    P.c(k) = sum(ClassProb(:,k)); % normalized
+    P.c(k) = sum(ClassProb(:,k)) / totalprob; % normalized
   end
 
   for part = 1:numparts

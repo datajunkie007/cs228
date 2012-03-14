@@ -52,14 +52,16 @@ for iter=1:maxIter
 
   for part = 1:numparts
 
-    for k=1:K
+    parentpart = 0;
+    U = [];
+    if G(part, 1) == 1
+      parentpart = G(part, 2);
+      U(:, 1) = poseData(:, parentpart, 1);
+      U(:, 2) = poseData(:, parentpart, 2);
+      U(:, 3) = poseData(:, parentpart, 3);
+    end
 
-      parentpart = 0;
-      if (length(size(G)) == 2 && G(part, 1) == 1)
-        parentpart = G(part, 2);
-      elseif ( length(size(G)) == 3 && G(part, 1, k) == 1)
-        parentpart = G(part, 2, k);
-      end
+    for k=1:K
 
       if parentpart == 0
 
@@ -76,11 +78,6 @@ for iter=1:maxIter
         P.clg(part).sigma_angle(k) = sigma;
 
       else
-
-        U = [];
-        U(:, 1) = poseData(:, parentpart, 1);
-        U(:, 2) = poseData(:, parentpart, 2);
-        U(:, 3) = poseData(:, parentpart, 3);
 
         [Beta, sigma] = FitLinearGaussianParameters(poseData(:, part, 1), U, ClassProb(:, k));
         P.clg(part).theta(k, 1) = Beta(4);
@@ -137,10 +134,14 @@ for iter=1:maxIter
       for part=1:numparts
         
         parentpart = 0;
-        if (length(size(G)) == 2 && G(part, 1) == 1)
+        parentals = [];
+
+        if G(part, 1) == 1
           parentpart = G(part, 2);
-        elseif ( length(size(G)) == 3 && G(part, 1, k) == 1)
-          parentpart = G(part, 2, k);
+          parent_y = poseData(example, parentpart, 1);
+          parent_x = poseData(example, parentpart, 2);
+          parent_alpha = poseData(example, parentpart, 3);
+          parentals = [ parent_y parent_x parent_alpha ];
         end
         
         if (parentpart == 0)
@@ -150,11 +151,6 @@ for iter=1:maxIter
 
           JointProb(example, k) = sum( [ JointProb(example, k) pdf_y pdf_x pdf_angle ] );
         else
-          parent_y = poseData(example, parentpart, 1);
-          parent_x = poseData(example, parentpart, 2);
-          parent_alpha = poseData(example, parentpart, 3);
-          parentals = [ parent_y parent_x parent_alpha ];
-
           mu = P.clg(part).theta(k, 1) + parentals * P.clg(part).theta(k, 2:4)';
           sigma = P.clg(part).sigma_y(k);
           pdf_y = lognormpdf(poseData(example, part, 1), mu, sigma);
@@ -173,6 +169,7 @@ for iter=1:maxIter
       end
     end
   end
+
   ProbSum = logsumexp(JointProb);
   CondProb = JointProb - repmat(ProbSum,1,K);
   ClassProb = exp(CondProb);
@@ -196,10 +193,8 @@ for iter=1:maxIter
       for part = 1:10
 
         parentpart = 0;
-        if (length(size(G)) == 2 && G(part,1) == 1)
+        if G(part,1) == 1
           parentpart = G(part, 2);
-        elseif ( length(size(G)) == 3 && G(part,1, k) == 1)
-          parentpart = G(part, 2, k);
         end
 
         if ( parentpart == 0 )

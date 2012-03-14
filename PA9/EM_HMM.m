@@ -307,7 +307,7 @@ for iter=1:maxIter
       currentF = currentF + 1;
     end
     
-    [Marginals P] = ComputeExactMarginalsHMM(factorList);
+    [Marginals PCalibrated] = ComputeExactMarginalsHMM(factorList);
     
     Ps = zeros(M,K);
     for i=1:M
@@ -324,9 +324,9 @@ for iter=1:maxIter
       pair_ind = actionData(action).pair_ind(i);
       fromPose = actionData(action).marg_ind(i);
       toPose = actionData(action).marg_ind(i+1);
-      for j=1:length(P.cliqueList)
-        if all(ismember([fromPose toPose], P.cliqueList(j).var))
-          PairProb(pair_ind, :) = P.cliqueList(j).val;
+      for j=1:length(PCalibrated.cliqueList)
+        if all(ismember([fromPose toPose], PCalibrated.cliqueList(j).var))
+          PairProb(pair_ind, :) = PCalibrated.cliqueList(j).val;
           break;
         end
       end

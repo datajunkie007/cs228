@@ -33,6 +33,7 @@ N = size(poseData, 1);
 K = size(InitialClassProb, 2);
 L = size(actionData, 2); % number of actions
 V = size(InitialPairProb, 1);
+numparts = size(poseData, 2);
 
 ClassProb = InitialClassProb;
 PairProb = InitialPairProb;

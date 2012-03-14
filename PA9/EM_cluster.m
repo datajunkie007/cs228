@@ -6,10 +6,10 @@ function [P loglikelihood ClassProb] = EM_cluster(poseData, G, InitialClassProb,
 
 % INPUTS
 % poseData: N x 10 x 3 matrix, where N is number of poses;
-%   poseData(i,:,:) yields the 10x3 matrix for pose i.
+%   poseData(example,:,:) yields the 10x3 matrix for pose example.
 % G: graph parameterization as explained in PA8
 % InitialClassProb: N x K, initial allocation of the N poses to the K
-%   classes. InitialClassProb(i,j) is the probability that example i belongs
+%   classes. InitialClassProb(example,j) is the probability that example example belongs
 %   to class j
 % maxIter: max number of iterations to run EM
 
@@ -18,8 +18,8 @@ function [P loglikelihood ClassProb] = EM_cluster(poseData, G, InitialClassProb,
 % loglikelihood: #(iterations run) x 1 vector of loglikelihoods stored for
 %   each iteration
 % ClassProb: N x K, conditional class probability of the N examples to the
-%   K classes in the final iteration. ClassProb(i,j) is the probability that
-%   example i belongs to class j
+%   K classes in the final iteration. ClassProb(example,j) is the probability that
+%   example example belongs to class j
 
 % Initialize variables
 N = size(poseData, 1);
@@ -37,7 +37,7 @@ for iter=1:maxIter
   %
   % Fill in P.c with the estimates for prior class probabilities
   % Fill in P.clg for each body part and each class
-  % Make sure to choose the right parameterization based on G(i,1)
+  % Make sure to choose the right parameterization based on G(example,1)
   %
   % Hint: This part should be similar to your work from PA8
   
@@ -109,14 +109,14 @@ for iter=1:maxIter
   % E-STEP to re-estimate ClassProb using the new parameters
   %
   % Update ClassProb with the new conditional class probabilities.
-  % Recall that ClassProb(i,j) is the probability that example i belongs to
+  % Recall that ClassProb(example,j) is the probability that example example belongs to
   % class j.
   %
   % You should compute everything in log space, and only convert to
   % probability space at the end.
   %
   % Tip: To make things faster, try to reduce the number of calls to
-  % lognormpdf, and inline the function (i.e., copy the lognormpdf code
+  % lognormpdf, and inline the function (example.e., copy the lognormpdf code
   % into this file)
   %
   % Hint: You should use the logsumexp() function here to do
@@ -178,14 +178,14 @@ for iter=1:maxIter
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
-  % Compute log likelihood of dataset for this iteration
+  % Compute log likelihood of poseData for this iteration
   % Hint: You should use the logsumexp() function here
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   loglikelihood(iter) = 0;
   
-  for i=1:N
+  for example=1:N
 
     ll = -Inf;
     for k=1:K
@@ -202,16 +202,16 @@ for iter=1:maxIter
         end
 
         if ( parentpart == 0 )
-          lpoi = lpoi + lognormpdf( dataset(i, part, 1), P.clg(part).mu_y(k), P.clg(part).sigma_y(k) );
-          lpoi = lpoi + lognormpdf( dataset(i, part, 2), P.clg(part).mu_x(k), P.clg(part).sigma_x(k) );
-          lpoi = lpoi + lognormpdf( dataset(i, part, 3), P.clg(part).mu_angle(k), P.clg(part).sigma_angle(k) );
+          lpoi = lpoi + lognormpdf( poseData(example, part, 1), P.clg(part).mu_y(k), P.clg(part).sigma_y(k) );
+          lpoi = lpoi + lognormpdf( poseData(example, part, 2), P.clg(part).mu_x(k), P.clg(part).sigma_x(k) );
+          lpoi = lpoi + lognormpdf( poseData(example, part, 3), P.clg(part).mu_angle(k), P.clg(part).sigma_angle(k) );
         else
-          mu_y = P.clg(part).theta(k, 1) + P.clg(part).theta(k, 2) * dataset(i, parentpart, 1) + P.clg(part).theta(k, 3) * dataset(i, parentpart, 2) + P.clg(part).theta(k, 4) * dataset(i, parentpart, 3);
-          mu_x = P.clg(part).theta(k, 5) + P.clg(part).theta(k, 6) * dataset(i, parentpart, 1) + P.clg(part).theta(k, 7) * dataset(i, parentpart, 2) + P.clg(part).theta(k, 8) * dataset(i, parentpart, 3);
-          mu_angle = P.clg(part).theta(k, 9) + P.clg(part).theta(k, 10) * dataset(i, parentpart, 1) + P.clg(part).theta(k, 11) * dataset(i, parentpart, 2) + P.clg(part).theta(k, 12) * dataset(i, parentpart, 3);
-          lpoi = lpoi + lognormpdf( dataset(i, part, 1), mu_y, P.clg(part).sigma_y(k) );
-          lpoi = lpoi + lognormpdf( dataset(i, part, 2), mu_x, P.clg(part).sigma_x(k) );
-          lpoi = lpoi + lognormpdf( dataset(i, part, 3), mu_angle, P.clg(part).sigma_angle(k) );
+          mu_y = P.clg(part).theta(k, 1) + P.clg(part).theta(k, 2) * poseData(example, parentpart, 1) + P.clg(part).theta(k, 3) * poseData(example, parentpart, 2) + P.clg(part).theta(k, 4) * poseData(example, parentpart, 3);
+          mu_x = P.clg(part).theta(k, 5) + P.clg(part).theta(k, 6) * poseData(example, parentpart, 1) + P.clg(part).theta(k, 7) * poseData(example, parentpart, 2) + P.clg(part).theta(k, 8) * poseData(example, parentpart, 3);
+          mu_angle = P.clg(part).theta(k, 9) + P.clg(part).theta(k, 10) * poseData(example, parentpart, 1) + P.clg(part).theta(k, 11) * poseData(example, parentpart, 2) + P.clg(part).theta(k, 12) * poseData(example, parentpart, 3);
+          lpoi = lpoi + lognormpdf( poseData(example, part, 1), mu_y, P.clg(part).sigma_y(k) );
+          lpoi = lpoi + lognormpdf( poseData(example, part, 2), mu_x, P.clg(part).sigma_x(k) );
+          lpoi = lpoi + lognormpdf( poseData(example, part, 3), mu_angle, P.clg(part).sigma_angle(k) );
         end
       end
 

@@ -281,7 +281,7 @@ for iter=1:maxIter
     factorList(currentF).var = [ actionData(action).marg_ind(1) ];
     factorList(currentF).card = [ K ];
     factorList(currentF).val = log(P.c);
-    assert(size(factorList(currentF).val) == [ 1 prod(factorList(currentF).card) ]);
+    assert(all(size(factorList(currentF).val) == [ 1 prod(factorList(currentF).card) ]));
     currentF = currentF + 1;
     
     % P(S_i | S_i-1)
@@ -291,8 +291,8 @@ for iter=1:maxIter
       prev = actionData(action).marg_ind(i-1);
       factorList(currentF).var = [ this prev ];
       factorList(currentF).card = [ K K ];
-      factorList(currentF).val = log(P.transMatrix(:));
-      assert(size(factorList(currentF).val) == [ 1 prod(factorList(currentF).card) ]);
+      factorList(currentF).val = log(P.transMatrix(:)');
+      assert(all(size(factorList(currentF).val) == [ 1 prod(factorList(currentF).card) ]));
       currentF = currentF + 1;
     end
     
@@ -303,7 +303,7 @@ for iter=1:maxIter
       factorList(currentF).var = [i];
       factorList(currentF).card = [K];
       factorList(currentF).val = logEmissionProb(i, :);
-      assert(size(factorList(currentF).val) == [ 1 prod(factorList(currentF).card) ]);
+      assert(all(size(factorList(currentF).val) == [ 1 prod(factorList(currentF).card) ]));
       currentF = currentF + 1;
     end
     
@@ -313,7 +313,7 @@ for iter=1:maxIter
     for i=1:M
       Ps(i,:) = Marginals(i).val;
     end
-    denom = logsumexp(logEmissionProb(actionData(action).marg_ind, :) + Ps)';
+    denom = logsumexp(logEmissionProb(actionData(action).marg_ind, :) + Ps);
     ClassProb(actionData(action).marg_ind, :) = (logEmissionProb(actionData(action).marg_ind, :) + Ps) - repmat(denom,1,K);
 
     % pair to pose mapping

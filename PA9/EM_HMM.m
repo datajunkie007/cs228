@@ -80,39 +80,91 @@ for iter=1:maxIter
     for k=1:K
 
       if parentpart == 0
-
-        [mu, sigma] = FitGaussianParameters(poseData(:, part, 1), ClassProb(:, k));
-        P.clg(part).mu_y(k) = mu;
-        P.clg(part).sigma_y(k) = sigma;
-
-        [mu, sigma] = FitGaussianParameters(poseData(:, part, 2), ClassProb(:, k));
-        P.clg(part).mu_x(k) = mu;
-        P.clg(part).sigma_x(k) = sigma;
-
-        [mu, sigma] = FitGaussianParameters(poseData(:, part, 3), ClassProb(:, k));
-        P.clg(part).mu_angle(k) = mu;
-        P.clg(part).sigma_angle(k) = sigma;
-
+        mu_y = zeros(1, L);
+        sigma_y = zeros(1, L);
+        mu_x = zeros(1, L);
+        sigma_x = zeros(1, L);
+        mu_angle = zeros(1, L);
+        sigma_angle = zeros(1, L);
       else
+        theta = zeros(L, 12);
+        sigma_y = zeros(1, L);
+        sigma_x = zeros(1, L);
+        sigma_angle = zeros(1, L);
+      end
 
-        [Beta, sigma] = FitLinearGaussianParameters(poseData(:, part, 1), U, ClassProb(:, k));
-        P.clg(part).theta(k, 1) = Beta(4);
-        P.clg(part).theta(k, 2:4) = Beta(1:3);
-        P.clg(part).sigma_y(k) = sigma;
+      for action=1:L
 
-        [Beta, sigma] = FitLinearGaussianParameters(poseData(:, part, 2), U, ClassProb(:, k));
-        P.clg(part).theta(k, 5) = Beta(4);
-        P.clg(part).theta(k, 6:8) = Beta(1:3);
-        P.clg(part).sigma_x(k) = sigma;
+        if parentpart == 0
 
-        [Beta, sigma] = FitLinearGaussianParameters(poseData(:, part, 3), U, ClassProb(:, k));
-        P.clg(part).theta(k, 9) = Beta(4);
-        P.clg(part).theta(k, 10:12) = Beta(1:3);
-        P.clg(part).sigma_angle(k) = sigma;
+          [mu, sigma] = FitGaussianParameters(poseData(actionData(action).marg_ind, part, 1), ClassProb(actionData(action).marg_ind, k));
+          mu_y(action) = mu;
+          sigma_y(action) = sigma;
 
+          [mu, sigma] = FitGaussianParameters(poseData(actionData(action).marg_ind, part, 2), ClassProb(actionData(action).marg_ind, k));
+          mu_x(action) = mu;
+          sigma_x(action) = sigma;
+
+          [mu, sigma] = FitGaussianParameters(poseData(actionData(action).marg_ind, part, 3), ClassProb(actionData(action).marg_ind, k));
+          mu_angle(action) = mu;
+          sigma_angle(action) = sigma;
+
+        else
+
+          [Beta, sigma] = FitLinearGaussianParameters(poseData(actionData(action).marg_ind, part, 1), U, ClassProb(actionData(action).marg_ind, k));
+          theta(action, 1) = Beta(4);
+          theta(action, 2:4) = Beta(1:3);
+          sigma_y(action) = sigma;
+
+          [Beta, sigma] = FitLinearGaussianParameters(poseData(actionData(action).marg_ind, part, 2), U, ClassProb(actionData(action).marg_ind, k));
+          theta(action, 5) = Beta(4);
+          theta(action, 6:8) = Beta(1:3);
+          sigma_x(action) = sigma;
+
+          [Beta, sigma] = FitLinearGaussianParameters(poseData(actionData(action).marg_ind, part, 3), U, ClassProb(actionData(action).marg_ind, k));
+          theta(action, 9) = Beta(4);
+          theta(action, 10:12) = Beta(1:3);
+          sigma_angle(action) = sigma;
+
+        end
+
+      end
+      
+      if parentpart == 0
+        P.clg(part).mu_y(k) = sum( mu_y ./ sum(mu_y) );
+        P.clg(part).sigma_y(k) = sum( sigma_y ./ sum(sigma_y) );
+        P.clg(part).mu_x(k) = sum( mu_x ./ sum(mu_x) );
+        P.clg(part).sigma_x(k) = sum( sigma_x ./ sum(sigma_x) );
+        P.clg(part).mu_angle(k) = sum( mu_angle ./ sum(mu_angle) );
+        P.clg(part).sigma_angle(k) = sum( sigma_angle ./ sum(sigma_angle) );
+      else
+        for i=1:12
+          P.clg(part).theta(k, i) = sum( theta(:, i) ./ sum(theta(:, i)) );
+        end
+        P.clg(part).sigma_y(k) = sum( sigma_y ./ sum(sigma_y) );
+        P.clg(part).sigma_x(k) = sum( sigma_x ./ sum(sigma_x) );
+        P.clg(part).sigma_angle(k) = sum( sigma_angle ./ sum(sigma_angle) );
       end
 
     end
+    
+    % normalization
+    if parentpart == 0
+      P.clg(part).mu_y = P.clg(part).mu_y ./ sum(P.clg(part).mu_y);
+      P.clg(part).sigma_y = P.clg(part).sigma_y ./ sum(P.clg(part).sigma_y);
+      P.clg(part).mu_x = P.clg(part).mu_x ./ sum(P.clg(part).mu_x);
+      P.clg(part).sigma_x = P.clg(part).sigma_x ./ sum(P.clg(part).sigma_x);
+      P.clg(part).mu_angle = P.clg(part).mu_angle ./ sum(P.clg(part).mu_angle);
+      P.clg(part).sigma_angle = P.clg(part).sigma_angle ./ sum(P.clg(part).sigma_angle);
+    else
+      for i=1:12
+        P.clg(part).theta(:, i) = P.clg(part).theta(:, i) ./ sum(P.clg(part).theta(:, i));
+      end
+      P.clg(part).sigma_y = P.clg(part).sigma_y ./ sum(P.clg(part).sigma_y);
+      P.clg(part).sigma_x = P.clg(part).sigma_x ./ sum(P.clg(part).sigma_x);
+      P.clg(part).sigma_angle = P.clg(part).sigma_angle ./ sum(P.clg(part).sigma_angle);
+    end
+    
 
   end
   

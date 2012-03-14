@@ -193,6 +193,10 @@ for iter=1:maxIter
           P.transMatrix(source,sink) = P.transMatrix(source,sink) + Mstat(source,sink)/Denom;
       end
   end
+  %Normalize
+  for source = 1:K
+      P.transMatrix(source,:) = P.transMatrix(source,:)/sum(P.transMatrix(source,:));
+  end
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
     
@@ -265,7 +269,7 @@ for iter=1:maxIter
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  
+
   for action=1:L
     
     M = length(actionData(action).marg_ind);
@@ -308,7 +312,7 @@ for iter=1:maxIter
     ClassProb(actionData(action).marg_ind,:) = (logEmissionProb(actionData(action).marg_ind, :) + Ps) - repmat(denom,1,K);
     
   end
-  
+
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   % Print out loglikelihood

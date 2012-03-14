@@ -129,11 +129,12 @@ for iter=1:maxIter
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
-  for part=1:numparts
-    for example=1:N
-      for k=1:K
-        
-        JointProb(example, k) = log(P.c(k));
+  for example=1:N
+    for k=1:K
+      
+      JointProb(example, k) = log(P.c(k));
+      
+      for part=1:numparts
         
         parentpart = 0;
         if (length(size(G)) == 2 && G(part, 1) == 1)

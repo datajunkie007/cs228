@@ -310,9 +310,10 @@ for iter=1:maxIter
     end
     denom = logsumexp(logEmissionProb(actionData(action).marg_ind, :) + Ps)';
     ClassProb(actionData(action).marg_ind, :) = (logEmissionProb(actionData(action).marg_ind, :) + Ps) - repmat(denom,1,K);
-  
-    actionData(action).pair_ind(1)
-    actionData(action).marg_ind(1) => actionData(action).marg_ind(2)
+
+    % pair to pose mapping
+    % actionData(action).pair_ind(1)
+    % actionData(action).marg_ind(1) => actionData(action).marg_ind(2)
     
     for i=1:length(actionData(action).pair_ind)
       pair_ind = actionData(action).pair_ind(i);

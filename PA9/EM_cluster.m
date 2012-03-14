@@ -46,10 +46,8 @@ for iter=1:maxIter
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-  totalprob = sum(sum(ClassProb));
   for k=1:K
-    P.c(k) = sum(ClassProb(:,k)) / totalprob; % normalized
+    P.c(k) = sum(ClassProb(:,k)) / N; % normalized
   end
 
   for part = 1:numparts
@@ -168,15 +166,16 @@ for iter=1:maxIter
           sigma = P.clg(part).sigma_angle(k);
           pdf_angle = lognormpdf(poseData(example, part, 3), mu, sigma);
           
-          JointProb(example, k) = logsumexp( [ JointProb(example, k) pdf_y pdf_x pdf_angle ] );
+          JointProb(example, k) = sum( [ JointProb(example, k) pdf_y pdf_x pdf_angle ] );
         end
         
       end
     end
   end
   ProbSum = logsumexp(JointProb);
-  ClassProb = JointProb - repmat(ProbSum,1,K);
-  ClassProb = exp(ClassProb);
+  CondProb = JointProb - repmat(ProbSum,1,K);
+  CondProb = exp(CondProb);
+  ClassProb = CondProb;
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -185,7 +184,7 @@ for iter=1:maxIter
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  loglikelihood(iter) = logsumexp((logsumexp(JointProb))');
+  loglikelihood(iter) = logsumexp((logsumexp(CondProb))');
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   % Print out loglikelihood

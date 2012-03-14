@@ -110,17 +110,17 @@ for iter=1:maxIter
 
         else
 
-          [Beta, sigma] = FitLinearGaussianParameters(poseData(actionData(action).marg_ind, part, 1), U, ClassProb(actionData(action).marg_ind, k));
+          [Beta, sigma] = FitLinearGaussianParameters(poseData(actionData(action).marg_ind, part, 1), U(actionData(action).marg_ind, :), ClassProb(actionData(action).marg_ind, k));
           theta(action, 1) = Beta(4);
           theta(action, 2:4) = Beta(1:3);
           sigma_y(action) = sigma;
 
-          [Beta, sigma] = FitLinearGaussianParameters(poseData(actionData(action).marg_ind, part, 2), U, ClassProb(actionData(action).marg_ind, k));
+          [Beta, sigma] = FitLinearGaussianParameters(poseData(actionData(action).marg_ind, part, 2), U(actionData(action).marg_ind, :), ClassProb(actionData(action).marg_ind, k));
           theta(action, 5) = Beta(4);
           theta(action, 6:8) = Beta(1:3);
           sigma_x(action) = sigma;
 
-          [Beta, sigma] = FitLinearGaussianParameters(poseData(actionData(action).marg_ind, part, 3), U, ClassProb(actionData(action).marg_ind, k));
+          [Beta, sigma] = FitLinearGaussianParameters(poseData(actionData(action).marg_ind, part, 3), U(actionData(action).marg_ind, :), ClassProb(actionData(action).marg_ind, k));
           theta(action, 9) = Beta(4);
           theta(action, 10:12) = Beta(1:3);
           sigma_angle(action) = sigma;
@@ -233,7 +233,7 @@ for iter=1:maxIter
           pdf_x = lognormpdf(poseData(example, part, 2), P.clg(part).mu_x(k), P.clg(part).sigma_x(k));
           pdf_angle = lognormpdf(poseData(example, part, 3), P.clg(part).mu_angle(k), P.clg(part).sigma_angle(k));
 
-          logEmissionProb(example, k) = sum( [ JointProb(example, k) pdf_y pdf_x pdf_angle ] );
+          logEmissionProb(example, k) = sum( [ logEmissionProb(example, k) pdf_y pdf_x pdf_angle ] );
         else
           mu = P.clg(part).theta(k, 1) + parentals * P.clg(part).theta(k, 2:4)';
           sigma = P.clg(part).sigma_y(k);
@@ -247,7 +247,7 @@ for iter=1:maxIter
           sigma = P.clg(part).sigma_angle(k);
           pdf_angle = lognormpdf(poseData(example, part, 3), mu, sigma);
           
-          logEmissionProb(example, k) = sum( [ JointProb(example, k) pdf_y pdf_x pdf_angle ] );
+          logEmissionProb(example, k) = sum( [ logEmissionProb(example, k) pdf_y pdf_x pdf_angle ] );
         end
         
       end

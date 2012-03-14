@@ -147,7 +147,7 @@ for iter=1:maxIter
           pdf_x = lognormpdf(poseData(example, part, 2), P.clg(part).mu_x(k), P.clg(part).sigma_x(k));
           pdf_angle = lognormpdf(poseData(example, part, 3), P.clg(part).mu_angle(k), P.clg(part).sigma_angle(k));
 
-          JointProb(example, k) = logsumexp( [ JointProb(example, k) pdf_y pdf_x pdf_angle ] );
+          JointProb(example, k) = sum( [ JointProb(example, k) pdf_y pdf_x pdf_angle ] );
         else
           parent_y = poseData(example, parentpart, 1);
           parent_x = poseData(example, parentpart, 2);
@@ -174,8 +174,7 @@ for iter=1:maxIter
   end
   ProbSum = logsumexp(JointProb);
   CondProb = JointProb - repmat(ProbSum,1,K);
-  CondProb = exp(CondProb);
-  ClassProb = CondProb;
+  ClassProb = exp(CondProb);
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -184,7 +183,44 @@ for iter=1:maxIter
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  loglikelihood(iter) = logsumexp((logsumexp(CondProb))');
+  loglikelihood(iter) = 0;
+  
+  for i=1:N
+
+    ll = -Inf;
+    for k=1:K
+      lpk = log(P.c(k));
+      lpoi = 0;
+
+      for part = 1:10
+
+        parentpart = 0;
+        if (length(size(G)) == 2 && G(part,1) == 1)
+          parentpart = G(part, 2);
+        elseif ( length(size(G)) == 3 && G(part,1, k) == 1)
+          parentpart = G(part, 2, k);
+        end
+
+        if ( parentpart == 0 )
+          lpoi = lpoi + lognormpdf( dataset(i, part, 1), P.clg(part).mu_y(k), P.clg(part).sigma_y(k) );
+          lpoi = lpoi + lognormpdf( dataset(i, part, 2), P.clg(part).mu_x(k), P.clg(part).sigma_x(k) );
+          lpoi = lpoi + lognormpdf( dataset(i, part, 3), P.clg(part).mu_angle(k), P.clg(part).sigma_angle(k) );
+        else
+          mu_y = P.clg(part).theta(k, 1) + P.clg(part).theta(k, 2) * dataset(i, parentpart, 1) + P.clg(part).theta(k, 3) * dataset(i, parentpart, 2) + P.clg(part).theta(k, 4) * dataset(i, parentpart, 3);
+          mu_x = P.clg(part).theta(k, 5) + P.clg(part).theta(k, 6) * dataset(i, parentpart, 1) + P.clg(part).theta(k, 7) * dataset(i, parentpart, 2) + P.clg(part).theta(k, 8) * dataset(i, parentpart, 3);
+          mu_angle = P.clg(part).theta(k, 9) + P.clg(part).theta(k, 10) * dataset(i, parentpart, 1) + P.clg(part).theta(k, 11) * dataset(i, parentpart, 2) + P.clg(part).theta(k, 12) * dataset(i, parentpart, 3);
+          lpoi = lpoi + lognormpdf( dataset(i, part, 1), mu_y, P.clg(part).sigma_y(k) );
+          lpoi = lpoi + lognormpdf( dataset(i, part, 2), mu_x, P.clg(part).sigma_x(k) );
+          lpoi = lpoi + lognormpdf( dataset(i, part, 3), mu_angle, P.clg(part).sigma_angle(k) );
+        end
+      end
+
+      ll = logsumexp( [ ll (lpk + lpoi) ]);
+    end
+
+    loglikelihood(iter) = loglikelihood(iter) + ll;
+  end
+
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   % Print out loglikelihood

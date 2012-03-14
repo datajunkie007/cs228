@@ -190,10 +190,14 @@ for iter=1:maxIter
       end
   end
   for sink = 1:K
-      Denom = sum(Mstat(:,s1));
+      Denom = sum(Mstat(:,sink));
       for source = 1:K
           P.transMatrix(source,sink) = P.transMatrix(source,sink) + Mstat(source,sink)/Denom;
       end
+  end
+  %Normalize
+  for source = 1:K
+      P.transMatrix(source,:) = P.transMatrix(source,:)/sum(P.transMatrix(source,:));
   end
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -267,7 +271,17 @@ for iter=1:maxIter
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  JointProb = zeros(N,K);
+  for example=1:N
+      for k=1:K
+          JointProb(example,k) = log(P.c(k)) + logEmissionProb(example,k);
+      end
+  end
+  ProbSum = logsumexp(JointProb);
+  CondProb = JointProb - repmat(ProbSum,1,K);
+  ClassProb = exp(CondProb);
   
+  PairProb = 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   % Print out loglikelihood

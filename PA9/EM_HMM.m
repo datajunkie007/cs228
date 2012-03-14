@@ -62,7 +62,7 @@ for iter=1:maxIter
     end
     P.c(k) = sum( Mi ./ sum(Mi) );
   end
-  P.c = P.c ./ sum(P.c) % normalize
+  P.c = P.c ./ sum(P.c); % normalize
   
   % might be wrong from here on -- still working on it
   
@@ -122,14 +122,27 @@ for iter=1:maxIter
   % Fill in P.transMatrix, the transition matrix for states
   % P.transMatrix(i,j) is the probability of transitioning from state i to state j
   P.transMatrix = zeros(K,K);
-  
+
   % Add Dirichlet prior based on size of poseData to avoid 0 probabilities
   P.transMatrix = P.transMatrix + size(PairProb,1) * .05;
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  Mstat = zeros(K,K);
   
+  for action = 1:L
+      for edge = actionData(1).marg_ind
+          tempTran = reshape(PairProb(edge,:),K,K);
+          Mstat = Mstat + tempTran;
+      end
+  end
+  for sink = 1:K
+      Denom = sum(Mstat(:,s1));
+      for source = 1:K
+          P.transMatrix(source,sink) = P.transMatrix(source,sink) + Mstat(source,sink)/Denom;
+      end
+  end
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
     
@@ -142,7 +155,49 @@ for iter=1:maxIter
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  
+  for example=1:N
+    for k=1:K
+      
+      logEmissionProb(example, k) = log(0);
+      
+      for part=1:numparts
+        
+        parentpart = 0;
+        parentals = [];
+
+        if G(part, 1) == 1
+          parentpart = G(part, 2);
+          parent_y = poseData(example, parentpart, 1);
+          parent_x = poseData(example, parentpart, 2);
+          parent_alpha = poseData(example, parentpart, 3);
+          parentals = [ parent_y parent_x parent_alpha ];
+        end
+        
+        if (parentpart == 0)
+          pdf_y = lognormpdf(poseData(example, part, 1), P.clg(part).mu_y(k), P.clg(part).sigma_y(k));
+          pdf_x = lognormpdf(poseData(example, part, 2), P.clg(part).mu_x(k), P.clg(part).sigma_x(k));
+          pdf_angle = lognormpdf(poseData(example, part, 3), P.clg(part).mu_angle(k), P.clg(part).sigma_angle(k));
+
+          logEmissionProb(example, k) = sum( [ JointProb(example, k) pdf_y pdf_x pdf_angle ] );
+        else
+          mu = P.clg(part).theta(k, 1) + parentals * P.clg(part).theta(k, 2:4)';
+          sigma = P.clg(part).sigma_y(k);
+          pdf_y = lognormpdf(poseData(example, part, 1), mu, sigma);
+          
+          mu = P.clg(part).theta(k, 5) + parentals * P.clg(part).theta(k, 6:8)';
+          sigma = P.clg(part).sigma_x(k);
+          pdf_x = lognormpdf(poseData(example, part, 2), mu, sigma);
+          
+          mu = P.clg(part).theta(k, 9) + parentals * P.clg(part).theta(k, 10:12)';
+          sigma = P.clg(part).sigma_angle(k);
+          pdf_angle = lognormpdf(poseData(example, part, 3), mu, sigma);
+          
+          logEmissionProb(example, k) = sum( [ JointProb(example, k) pdf_y pdf_x pdf_angle ] );
+        end
+        
+      end
+    end
+  end
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
     
@@ -160,7 +215,7 @@ for iter=1:maxIter
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+  
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   % Print out loglikelihood

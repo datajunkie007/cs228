@@ -64,8 +64,6 @@ for iter=1:maxIter
   end
   P.c = P.c ./ sum(P.c); % normalize
   
-  % might be wrong from here on -- still working on it
-  
   for part = 1:numparts
 
     parentpart = 0;
@@ -184,13 +182,13 @@ for iter=1:maxIter
   Mstat = zeros(K,K);
   
   for action = 1:L
-      for edge = actionData(1).marg_ind
+      for edge = actionData(action).pair_ind
           tempTran = reshape(PairProb(edge,:),K,K);
           Mstat = Mstat + tempTran;
       end
   end
   for sink = 1:K
-      Denom = sum(Mstat(:,s1));
+      Denom = sum(Mstat(:,sink));
       for source = 1:K
           P.transMatrix(source,sink) = P.transMatrix(source,sink) + Mstat(source,sink)/Denom;
       end
@@ -267,6 +265,49 @@ for iter=1:maxIter
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+  for action=1:L
+    
+    M = length(actionData(action).marg_ind);
+    factorList = repmat(struct ('var', [], 'card', [], 'val', []), 1, 2 * M );
+    currentF = 1;
+    
+    % P(S_1)
+    factorList(currentF).var = [ actionData(action).marg_ind(1) ];
+    factorList(currentF).card = [ K ];
+    factorList(currentF).val = log(P.c);
+    currentF = currentF + 1;
+    
+    % P(S_i | S_i-1)
+    
+    for i=2:M
+      this = actionData(action).marg_ind(i);
+      prev = actionData(action).marg_ind(i-1);
+      factorList(currentF).var = [ this prev ];
+      factorList(currentF).card = [ K K ];
+      factorList(currentF).val = log(P.transMatrix(:));
+      currentF = currentF + 1;
+    end
+    
+    % P(P_j | S_j)
+    % reduced to theta(S_j)
+    
+    for i=actionData(action).marg_ind
+      factorList(currentF).var = [i];
+      factorList(currentF).card = [K];
+      factorList(currentF).val = logEmissionProb(i, :);
+    end
+    
+    [Marginals PCalibrated] = ComputeExactMarginalsHMM(factorList);
+    
+    Ps = zeros(M,K);
+    for i=1:M
+      Ps(i,:) = Marginals(i).val;
+    end
+    denom = logsumexp(logEmissionProb(actionData(action).marg_ind, :) + Ps)';
+    ClassProb(actionData(action).marg_ind,:) = (logEmissionProb(actionData(action).marg_ind, :) + Ps) - repmat(denom,1,K);
+    
+  end
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   

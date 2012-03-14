@@ -54,6 +54,68 @@ for iter=1:maxIter
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
   
+  Mi = zeros(1,L);
+  for k=1:K
+    for action=1:L
+      % numposes = size(actionData(action).marg_ind, 2);
+      Mi(action) = sum(ClassProb(actionData(action).marg_ind, k)) / size(actionData(action).marg_ind, 2);
+    end
+    P.c(k) = sum( Mi ./ sum(Mi) );
+  end
+  P.c = P.c ./ sum(P.c) % normalize
+  
+  % might be wrong from here on -- still working on it
+  
+  for part = 1:numparts
+
+    parentpart = 0;
+    U = [];
+    if G(part, 1) == 1
+      parentpart = G(part, 2);
+      U(:, 1) = poseData(:, parentpart, 1);
+      U(:, 2) = poseData(:, parentpart, 2);
+      U(:, 3) = poseData(:, parentpart, 3);
+    end
+
+    for k=1:K
+
+      if parentpart == 0
+
+        [mu, sigma] = FitGaussianParameters(poseData(:, part, 1), ClassProb(:, k));
+        P.clg(part).mu_y(k) = mu;
+        P.clg(part).sigma_y(k) = sigma;
+
+        [mu, sigma] = FitGaussianParameters(poseData(:, part, 2), ClassProb(:, k));
+        P.clg(part).mu_x(k) = mu;
+        P.clg(part).sigma_x(k) = sigma;
+
+        [mu, sigma] = FitGaussianParameters(poseData(:, part, 3), ClassProb(:, k));
+        P.clg(part).mu_angle(k) = mu;
+        P.clg(part).sigma_angle(k) = sigma;
+
+      else
+
+        [Beta, sigma] = FitLinearGaussianParameters(poseData(:, part, 1), U, ClassProb(:, k));
+        P.clg(part).theta(k, 1) = Beta(4);
+        P.clg(part).theta(k, 2:4) = Beta(1:3);
+        P.clg(part).sigma_y(k) = sigma;
+
+        [Beta, sigma] = FitLinearGaussianParameters(poseData(:, part, 2), U, ClassProb(:, k));
+        P.clg(part).theta(k, 5) = Beta(4);
+        P.clg(part).theta(k, 6:8) = Beta(1:3);
+        P.clg(part).sigma_x(k) = sigma;
+
+        [Beta, sigma] = FitLinearGaussianParameters(poseData(:, part, 3), U, ClassProb(:, k));
+        P.clg(part).theta(k, 9) = Beta(4);
+        P.clg(part).theta(k, 10:12) = Beta(1:3);
+        P.clg(part).sigma_angle(k) = sigma;
+
+      end
+
+    end
+
+  end
+  
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   % M-STEP to estimate parameters for transition matrix

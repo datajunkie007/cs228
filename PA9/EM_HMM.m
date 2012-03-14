@@ -289,7 +289,7 @@ for iter=1:maxIter
     for i=2:M
       this = actionData(action).marg_ind(i);
       prev = actionData(action).marg_ind(i-1);
-      factorList(currentF).var = [ this prev ];
+      factorList(currentF).var = [ prev this ];
       factorList(currentF).card = [ K K ];
       factorList(currentF).val = log(P.transMatrix(:)');
       assert(all(size(factorList(currentF).val) == [ 1 prod(factorList(currentF).card) ]));

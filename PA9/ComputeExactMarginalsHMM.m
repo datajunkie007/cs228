@@ -28,7 +28,9 @@ PCalibrated = CliqueTreeCalibrate(compressedCliqueTree);
 varsList = sort(unique([F(:).var]));
 M = repmat(struct('var', 0, 'card', 0, 'val', []), length(varsList), 1);
 for i = 1:length(varsList)
-    assert (varsList(i) == i);
+    if ~ all(varsList(i) == i)
+        assert(0);
+    end
     if (i == 1)
         clique = PCalibrated.cliqueList(i);
         M(i) = FactorMarginalization(clique, 2);

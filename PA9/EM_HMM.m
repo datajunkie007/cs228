@@ -302,15 +302,30 @@ for iter=1:maxIter
       factorList(currentF).val = logEmissionProb(i, :);
     end
     
-    [Marginals PCalibrated] = ComputeExactMarginalsHMM(factorList);
+    [Marginals P] = ComputeExactMarginalsHMM(factorList);
     
     Ps = zeros(M,K);
     for i=1:M
       Ps(i,:) = Marginals(i).val;
     end
     denom = logsumexp(logEmissionProb(actionData(action).marg_ind, :) + Ps)';
-    ClassProb(actionData(action).marg_ind,:) = (logEmissionProb(actionData(action).marg_ind, :) + Ps) - repmat(denom,1,K);
+    ClassProb(actionData(action).marg_ind, :) = (logEmissionProb(actionData(action).marg_ind, :) + Ps) - repmat(denom,1,K);
+  
+    actionData(action).pair_ind(1)
+    actionData(action).marg_ind(1) => actionData(action).marg_ind(2)
     
+    for i=1:length(actionData(action).pair_ind)
+      pair_ind = actionData(action).pair_ind(i);
+      fromPose = actionData(action).marg_ind(i);
+      toPose = actionData(action).marg_ind(i+1);
+      for j=1:length(P.cliqueList)
+        if all(ismember([fromPose toPose], P.cliqueList(j).var))
+          PairProb(pair_ind, :) = P.cliqueList(j).val;
+          break;
+        end
+      end
+    end
+  
   end
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

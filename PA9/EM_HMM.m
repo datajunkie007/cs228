@@ -281,6 +281,7 @@ for iter=1:maxIter
       for j=1:length(PCalibrated.cliqueList)
         if all(ismember([fromPose toPose], PCalibrated.cliqueList(j).var))
           PairProb(pair_ind, :) = exp(PCalibrated.cliqueList(j).val);
+          PairProb(pair_ind, :) = PairProb(pair_ind, :) / sum(PairProb(pair_ind, :));
           break;
         end
       end

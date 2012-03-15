@@ -242,7 +242,7 @@ for iter=1:maxIter
       this = actionData(action).marg_ind(i);
       prev = actionData(action).marg_ind(i-1);
       % factorList(currentF).var = [ prev this ];
-      factorList(currentF).var = [i i-1];
+      factorList(currentF).var = [i-1 i];
       factorList(currentF).card = [ K K ];
       factorList(currentF).val = log(P.transMatrix(:)');
       assert(all(size(factorList(currentF).val) == [ 1 prod(factorList(currentF).card) ]));
@@ -253,7 +253,7 @@ for iter=1:maxIter
     % reduced to theta(S_j)
     
     % for i=actionData(action).marg_ind
-    for i = 1:length(actionData(action).marg_ind)
+    for i = 1:M
       factorList(currentF).var = [i];
       factorList(currentF).card = [K];
       factorList(currentF).val = logEmissionProb(actionData(action).marg_ind(i), :);
@@ -280,7 +280,7 @@ for iter=1:maxIter
       toPose = actionData(action).marg_ind(i+1);
       for j=1:length(PCalibrated.cliqueList)
         if all(ismember([fromPose toPose], PCalibrated.cliqueList(j).var))
-          PairProb(pair_ind, :) = PCalibrated.cliqueList(j).val;
+          PairProb(pair_ind, :) = exp(PCalibrated.cliqueList(j).val);
           break;
         end
       end

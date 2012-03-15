@@ -21,6 +21,19 @@ function [accuracy, predicted_labels] = RecognizeActions(datasetTrain, datasetTe
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+P = repmat(struct(), 1, length(datasetTrain));
+loglikelihood = {};
+ClassProb = {};
+PairProb = {};
+
+for action=1:length(datasetTrain)
+  [pa ll cc pp] = EM_HMM(datasetTrain(action).actionData, datasetTrain(action).poseData, G, datasetTrain(action).InitialClassProb, datasetTrain(action).InitialPairProb, maxIter);
+  P(action) = pa;
+  loglikelihood{action} = ll;
+  ClassProb{action} = cc;
+  PairProb{action} = pp;
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -35,5 +48,9 @@ predicted_labels = [];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+for action=1:length(datasetTest)
+  
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

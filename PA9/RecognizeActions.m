@@ -155,6 +155,7 @@ for testcase=1:length(datasetTest.actionData)
   
 end
 
+predicted_labels = predicted_labels';
 accuracy = sum(predicted_labels == datasetTest.labels) / length(datasetTest.labels);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

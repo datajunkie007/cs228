@@ -59,11 +59,17 @@ for iter=1:maxIter
   for k=1:K
     for action=1:L
       % numposes = size(actionData(action).marg_ind, 2);
-      Mi(action) = sum(ClassProb(actionData(action).marg_ind, k)) / size(actionData(action).marg_ind, 2);
+      % Mi(action) = sum(ClassProb(actionData(action).marg_ind, k)) / size(actionData(action).marg_ind, 2);
+      P.c(k) = P.c(k) + sum(ClassProb(actionData(action).marg_ind, k)) / size(actionData(action).marg_ind, 2);
     end
-    P.c(k) = sum( Mi ./ sum(Mi) );
   end
   P.c = P.c ./ sum(P.c); % normalize
+  P.c
+  return;
+  
+  % for k=1:K
+  %   P.c(k) = sum(ClassProb(:,k)) / N; % normalized
+  % end
   
   for part = 1:numparts
 

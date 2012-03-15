@@ -16,7 +16,7 @@
 % CS228 Probabilistic Graphical Models(Winter 2012)
 % Copyright (C) 2012, Stanford University
 
-function P = CreateCliqueTreeHMMFast (F)
+function P = CreateCliqueTreeHMM (F)
 
 maxVar = max([F.var]);
 numNodes = maxVar - 1;

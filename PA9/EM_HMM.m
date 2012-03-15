@@ -213,7 +213,7 @@ for iter=1:maxIter
   for example=1:N
     for k=1:K
       
-      logEmissionProb(example, k) = log(0);
+      logEmissionProb(example, k) = 0;
       
       for part=1:numparts
         

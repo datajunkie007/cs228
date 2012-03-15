@@ -285,7 +285,9 @@ for iter=1:maxIter
         end
       end
     end
-  
+
+    loglikelihood(iter) = loglikelihood(iter) + logsumexp(PCalibrated.cliqueList(end).val);
+
   end
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

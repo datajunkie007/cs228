@@ -186,12 +186,7 @@ for iter=1:maxIter
           Mstat = Mstat + tempTran;
       end
   end
-  for sink = 1:K
-      Denom = sum(Mstat(:,sink));
-      for source = 1:K
-          P.transMatrix(source,sink) = P.transMatrix(source,sink) + Mstat(source,sink)/Denom;
-      end
-  end
+  P.transMatrix = P.transMatrix + Mstat;
   %Normalize
   for source = 1:K
       P.transMatrix(source,:) = P.transMatrix(source,:)/sum(P.transMatrix(source,:));
@@ -315,7 +310,7 @@ for iter=1:maxIter
       Ps(i,:) = Marginals(i).val;
     end
     denom = logsumexp(logEmissionProb(actionData(action).marg_ind, :) + Ps);
-    ClassProb(actionData(action).marg_ind, :) = (logEmissionProb(actionData(action).marg_ind, :) + Ps) - repmat(denom,1,K);
+    ClassProb(actionData(action).marg_ind, :) = exp((logEmissionProb(actionData(action).marg_ind, :) + Ps) - repmat(denom,1,K));
 
     % pair to pose mapping
     % actionData(action).pair_ind(1)

@@ -140,7 +140,7 @@ for testcase=1:length(datasetTest.actionData)
     for i = 1:N
       factorList(currentF).var = [i];
       factorList(currentF).card = [K];
-      factorList(currentF).val = logEmissionProb(actionData.marg_ind(i), :);
+      factorList(currentF).val = logEmissionProb(i, :);
       assert(all(size(factorList(currentF).val) == [ 1 prod(factorList(currentF).card) ]));
       currentF = currentF + 1;
     end

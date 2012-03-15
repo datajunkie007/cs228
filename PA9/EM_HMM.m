@@ -200,10 +200,13 @@ for iter=1:maxIter
           
           logEmissionProb(example, k) = sum( [ logEmissionProb(example, k) pdf_y pdf_x pdf_angle ] );
         end
-        
+
       end
     end
   end
+  
+  % logEmissionProb = logEmissionProb - repmat(logsumexp(logEmissionProb), 1, K); % normalize
+  
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
     
@@ -262,13 +265,10 @@ for iter=1:maxIter
     end
     
     [Marginals PCalibrated] = ComputeExactMarginalsHMM(factorList);
-    
-    Ps = zeros(M,K);
+
     for i=1:M
-      Ps(i,:) = Marginals(i).val;
+      ClassProb(actionData(action).marg_ind(i), :) = exp(Marginals(i).val);
     end
-    denom = logsumexp(logEmissionProb(actionData(action).marg_ind, :) + Ps);
-    ClassProb(actionData(action).marg_ind, :) = exp((logEmissionProb(actionData(action).marg_ind, :) + Ps) - repmat(denom,1,K));
 
     % pair to pose mapping
     % actionData(action).pair_ind(1)
@@ -276,8 +276,8 @@ for iter=1:maxIter
     
     for i=1:length(actionData(action).pair_ind)
       pair_ind = actionData(action).pair_ind(i);
-      fromPose = actionData(action).marg_ind(i);
-      toPose = actionData(action).marg_ind(i+1);
+      fromPose = i;
+      toPose = i+1;
       for j=1:length(PCalibrated.cliqueList)
         if all(ismember([fromPose toPose], PCalibrated.cliqueList(j).var))
           PairProb(pair_ind, :) = exp(PCalibrated.cliqueList(j).val);

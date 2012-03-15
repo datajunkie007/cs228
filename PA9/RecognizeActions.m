@@ -21,14 +21,14 @@ function [accuracy, predicted_labels] = RecognizeActions(datasetTrain, datasetTe
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Ps = repmat(struct(), 1, length(datasetTrain));
+Ps = {};
 loglikelihood = {};
 ClassProbs = {};
 PairProbs = {};
 
 for action=1:length(datasetTrain)
   [pa ll cc pp] = EM_HMM(datasetTrain(action).actionData, datasetTrain(action).poseData, G, datasetTrain(action).InitialClassProb, datasetTrain(action).InitialPairProb, maxIter);
-  Ps(action) = pa;
+  Ps{action} = pa;
   loglikelihood{action} = ll;
   ClassProb{action} = cc;
   PairProb{action} = pp;
@@ -56,7 +56,7 @@ for testcase=1:length(datasetTest.actionData)
   for action = 1:length(datasetTrain)
   
     poseData = datasetTest.poseData(datasetTest.actionData(testcase).marg_ind, :, :);
-    P = Ps(action);
+    P = Ps{action};
     actionData = datasetTest.actionData(testcase);
     
   
@@ -124,8 +124,8 @@ for testcase=1:length(datasetTest.actionData)
     % P(S_i | S_i-1)
     
     for i=2:N
-      this = actionData(action).marg_ind(i);
-      prev = actionData(action).marg_ind(i-1);
+      this = actionData.marg_ind(i);
+      prev = actionData.marg_ind(i-1);
       % factorList(currentF).var = [ prev this ];
       factorList(currentF).var = [i-1 i];
       factorList(currentF).card = [ K K ];
@@ -140,7 +140,7 @@ for testcase=1:length(datasetTest.actionData)
     for i = 1:N
       factorList(currentF).var = [i];
       factorList(currentF).card = [K];
-      factorList(currentF).val = logEmissionProb(actionData(action).marg_ind(i), :);
+      factorList(currentF).val = logEmissionProb(actionData.marg_ind(i), :);
       assert(all(size(factorList(currentF).val) == [ 1 prod(factorList(currentF).card) ]));
       currentF = currentF + 1;
     end

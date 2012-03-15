@@ -123,8 +123,6 @@ for iter=1:maxIter
 
   end
 
-  return;
-
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   % M-STEP to estimate parameters for transition matrix

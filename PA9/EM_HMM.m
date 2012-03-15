@@ -278,7 +278,8 @@ for iter=1:maxIter
     currentF = 1;
     
     % P(S_1)
-    factorList(currentF).var = [ actionData(action).marg_ind(1) ];
+    % factorList(currentF).var = [ actionData(action).marg_ind(1) ];
+    factorList(currentF).var = 1;
     factorList(currentF).card = [ K ];
     factorList(currentF).val = log(P.c);
     assert(all(size(factorList(currentF).val) == [ 1 prod(factorList(currentF).card) ]));
@@ -289,7 +290,8 @@ for iter=1:maxIter
     for i=2:M
       this = actionData(action).marg_ind(i);
       prev = actionData(action).marg_ind(i-1);
-      factorList(currentF).var = [ prev this ];
+      % factorList(currentF).var = [ prev this ];
+      factorList(currentF).var = [i i-1];
       factorList(currentF).card = [ K K ];
       factorList(currentF).val = log(P.transMatrix(:)');
       assert(all(size(factorList(currentF).val) == [ 1 prod(factorList(currentF).card) ]));
@@ -299,10 +301,11 @@ for iter=1:maxIter
     % P(P_j | S_j)
     % reduced to theta(S_j)
     
-    for i=actionData(action).marg_ind
+    % for i=actionData(action).marg_ind
+    for i = 1:length(actionData(action).marg_ind)
       factorList(currentF).var = [i];
       factorList(currentF).card = [K];
-      factorList(currentF).val = logEmissionProb(i, :);
+      factorList(currentF).val = logEmissionProb(actionData(action).marg_ind(i), :);
       assert(all(size(factorList(currentF).val) == [ 1 prod(factorList(currentF).card) ]));
       currentF = currentF + 1;
     end

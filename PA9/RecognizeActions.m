@@ -56,7 +56,7 @@ for testcase=1:length(datasetTest.actionData)
   for action = 1:length(datasetTrain)
   
     poseData = datasetTest.poseData(datasetTest.actionData(testcase).marg_ind, :, :);
-    P = Ps{action};
+    P = Ps(action);
     actionData = datasetTest.actionData(testcase);
     
   
@@ -110,7 +110,7 @@ for testcase=1:length(datasetTest.actionData)
       end
     end
 
-    factorList = repmat(struct ('var', [], 'card', [], 'val', []), 1, 2 * M );
+    factorList = repmat(struct ('var', [], 'card', [], 'val', []), 1, 2 * N );
     currentF = 1;
     
     % P(S_1)

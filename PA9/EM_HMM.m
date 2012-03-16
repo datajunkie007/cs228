@@ -147,7 +147,7 @@ for iter=1:maxIter
   P.transMatrix = P.transMatrix + Mstat;
   %Normalize
   for source = 1:K
-      P.transMatrix(source,:) = P.transMatrix(source,:)/sum(P.transMatrix(source,:));
+      P.transMatrix(source,:) = P.transMatrix(source,:) / sum(P.transMatrix(source,:));
   end
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   

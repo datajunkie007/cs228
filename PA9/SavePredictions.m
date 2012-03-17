@@ -3,7 +3,7 @@ function SavePredictions (yourPredictions)
 % submit script for will then read in that
 % file to send your predictions to the grading server.
 %
-% The input `yourPredictions' should be a 90x1 vector where 
+% The input `yourPredictions' should be a 90x1 vector where
 % yourPredictions(i) is the predicted class (1-3) for the i'th action.
 
 if (~isequal([90 1], size(yourPredictions)))

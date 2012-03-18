@@ -5,4 +5,8 @@ Using the EM method to train an HMM.
 Same as the case for RecognizeActions.m
 
 Then test for each action, by computing likelihood over each of the models.
-Choose the model with highest likelihood.
+We compute the likelihood by constructing a clique tree consisting of three types of factors.
+The initial state prior, the transition CPDs and the emission CPDs.
+Calibrating this clique tree yields the likelihood from the unormalized beliefs after message passing is completed.
+
+We then choose the model with highest likelihood, and state that as our prediction.

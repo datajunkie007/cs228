@@ -32,9 +32,9 @@ for action=1:length(datasetTrain)
   % clustering for initial probabilities
   reshapedData = zeros(size(poseData, 1), size(poseData, 2) * size(poseData, 3));
   for pose=1:size(poseData, 1)
-    reshapedData(pose) = reshape(poseData(pose, :, :), 1, size(poseData, 2) * size(poseData, 3));
+    reshapedData(pose, :) = reshape(poseData(pose, :, :), 1, size(poseData, 2) * size(poseData, 3));
   end
-  gm = gmdistribution.fit(reshapedData, K);
+  gm = gmdistribution.fit(reshapedData, K, 'Regularize', 1e-5); % 'CovType', 'diagonal', 'SharedCov', true);
   InitialClassProb = posterior(gm, reshapedData);
   % END clustering
   [pa ll cc pp] = EM_HMM(datasetTrain(action).actionData, poseData, G, InitialClassProb, datasetTrain(action).InitialPairProb, maxIter);

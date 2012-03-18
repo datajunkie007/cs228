@@ -27,7 +27,7 @@ PairProbs = {};
 
 for action=1:length(datasetTrain)
   poseData = datasetTrain(action).poseData;
-  InitialClassProb = dataset(action).InitialClassProb;
+  InitialClassProb = datasetTrain(action).InitialClassProb;
   K = size(InitialClassProb, 2);
   % clustering for initial probabilities
   reshapedData = zeros(size(poseData, 1), size(poseData, 2) * size(poseData, 3));

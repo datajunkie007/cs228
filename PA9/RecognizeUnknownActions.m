@@ -26,7 +26,18 @@ ClassProbs = {};
 PairProbs = {};
 
 for action=1:length(datasetTrain)
-  [pa ll cc pp] = EM_HMM(datasetTrain(action).actionData, datasetTrain(action).poseData, G, datasetTrain(action).InitialClassProb, datasetTrain(action).InitialPairProb, maxIter);
+  poseData = datasetTrain(action).poseData;
+  InitialClassProb = dataset(action).InitialClassProb;
+  K = size(InitialClassProb, 2);
+  % clustering for initial probabilities
+  reshapedData = zeros(size(poseData, 1), size(poseData, 2) * size(poseData, 3));
+  for pose=1:size(poseData, 1)
+    reshapedData(pose) = reshape(poseData(pose, :, :), 1, size(poseData, 2) * size(poseData, 3));
+  end
+  gm = gmdistribution.fit(reshapedData, K);
+  InitialClassProb = posterior(gm, reshapedData);
+  % END clustering
+  [pa ll cc pp] = EM_HMM(datasetTrain(action).actionData, poseData, G, InitialClassProb, datasetTrain(action).InitialPairProb, maxIter);
   Ps{action} = pa;
   loglikelihood{action} = ll;
   ClassProb{action} = cc;
@@ -149,6 +160,8 @@ end
 
 predicted_labels = predicted_labels';
 SavePredictions(predicted_labels);
+
+% accuracy = sum(predicted_labels == datasetTest.labels) / length(datasetTest.labels)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

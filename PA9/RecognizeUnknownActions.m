@@ -28,6 +28,7 @@ PairProbs = {};
 for action=1:length(datasetTrain)
   poseData = datasetTrain(action).poseData;
   InitialClassProb = datasetTrain(action).InitialClassProb;
+  InitialPairProb = datasetTrain(action).InitialPairProb;
   K = size(InitialClassProb, 2);
   % clustering for initial probabilities
   reshapedData = zeros(size(poseData, 1), size(poseData, 2) * size(poseData, 3));
@@ -35,15 +36,42 @@ for action=1:length(datasetTrain)
     reshapedData(pose, :) = reshape(poseData(pose, :, :), 1, size(poseData, 2) * size(poseData, 3));
   end
   % Don't have enough data for 30 dimensional data, so need to use diagonal covariance matricies
+  % result is random!!!
   gm = gmdistribution.fit(reshapedData, K, 'CovType', 'diagonal', 'Regularize', 1e-4); % 'SharedCov', true);
-  InitialClassProb = posterior(gm, reshapedData); % NOT ACTUALLY USING THIS => decreases accuracy
+  %InitialClassProb = posterior(gm, reshapedData); % NOT ACTUALLY USING THIS => decreases accuracy  
+  for compo = 1:K
+      mu = gm.mu(compo,:);
+      Sigma = gm.Sigma(:,:,compo);
+%       InvSigma = Sigma^(-1);
+%       Det = det(Sigma);
+      for row = 1:size(reshapedData,1)
+          InitialClassProb(row,compo) = exp(logsumexp(lognormpdf(reshapedData(row,:),mu,Sigma)));
+      end
+  end
+  for i=1:size(InitialClassProb,1)
+    InitialClassProb(i,:) = InitialClassProb(i,:) / sum(InitialClassProb(i,:));
+  end
   % add dirichlet prior
   InitialClassProb = InitialClassProb + 0.005;
   for i=1:size(InitialClassProb,1)
     InitialClassProb(i,:) = InitialClassProb(i,:) / sum(InitialClassProb(i,:));
   end
   % END clustering
-  [pa ll cc pp] = EM_HMM(datasetTrain(action).actionData, poseData, G, InitialClassProb, datasetTrain(action).InitialPairProb, maxIter);
+  TransformMatrix = zeros(K,K);
+  for i =1:size(datasetTrain(action).actionData,2)
+      for j = 1:size(datasetTrain(action).actionData(i).marg_ind,2)-1
+         SourceProb = InitialClassProb(datasetTrain(action).actionData(i).marg_ind(j),:);
+         SinkProb = InitialClassProb(datasetTrain(action).actionData(i).marg_ind(j+1),:);
+         TransformMatrix = TransformMatrix + SourceProb'*SinkProb;
+      end
+  end
+  for i = 1:K
+      TransformMatrix(i,:) = TransformMatrix(i,:)/sum(TransformMatrix(i,:));
+  end
+  for j = 1:size(InitialPairProb,1)
+      InitialPairProb(j,:) = TransformMatrix(:)';
+  end
+  [pa ll cc pp] = EM_HMM(datasetTrain(action).actionData, poseData, G, InitialClassProb, InitialPairProb, maxIter);
   Ps{action} = pa;
   loglikelihood{action} = ll;
   ClassProb{action} = cc;
@@ -56,6 +84,8 @@ end
 % Compute and return the predicted labels
 % Accuracy is defined as (#correctly classified examples / #total examples)
 % Note that all actions share the same graph parameterization
+
+% save('myParameters','Ps','loglikelihood','ClassProb','PairProb');
 
 predicted_labels = [];
 

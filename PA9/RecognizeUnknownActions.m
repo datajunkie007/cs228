@@ -37,6 +37,11 @@ for action=1:length(datasetTrain)
   % Don't have enough data for 30 dimensional data, so need to use diagonal covariance matricies
   gm = gmdistribution.fit(reshapedData, K, 'CovType', 'diagonal', 'Regularize', 1e-4); % 'SharedCov', true);
   InitialClassProb = posterior(gm, reshapedData); % NOT ACTUALLY USING THIS => decreases accuracy
+  % add dirichlet prior
+  InitialClassProb = InitialClassProb + 0.005;
+  for i=1:size(InitialClassProb,1)
+    InitialClassProb(i,:) = InitialClassProb(i,:) / sum(InitialClassProb(i,:));
+  end
   % END clustering
   [pa ll cc pp] = EM_HMM(datasetTrain(action).actionData, poseData, G, InitialClassProb, datasetTrain(action).InitialPairProb, maxIter);
   Ps{action} = pa;
